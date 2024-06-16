@@ -17,22 +17,19 @@ export class MoviesService {
     return await this.moviesRepository.find();
   }
 
-  //filter movie by genere
-  async getMoviesByGenere(genre: string): Promise<Movie[]> {
-    return await this.moviesRepository.find({ where: { genre } });
-  }
-
   //filter movie by rating and genre
   async filterMovies(filterMovieDto: FilterMoviesDto): Promise<Movie[]> {
-    const { rating, genre } = filterMovieDto;
+    const { rating, genreId } = filterMovieDto;
     const queryBuilder = this.moviesRepository.createQueryBuilder('movie');
 
     if (rating) {
-      queryBuilder.andWhere('movie.rating = :rating', { rating });
+      queryBuilder
+        .innerJoin('movie.reviews', 'review')
+        .andWhere('review.rating = :rating', { rating });
     }
 
-    if (genre) {
-      queryBuilder.andWhere('movie.genre = :genre', { genre });
+    if (genreId) {
+      queryBuilder.andWhere('movie.genre = :genre', { genreId });
     }
 
     return queryBuilder.getMany();

@@ -12,7 +12,7 @@ export class UpdateMovieDto {
   origin: string;
 
   @IsString()
-  genre: string;
+  genreId: number;
 
   @IsNumber()
   rating: string;

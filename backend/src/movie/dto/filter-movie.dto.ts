@@ -3,9 +3,9 @@ import { IsOptional, IsString } from 'class-validator';
 export class FilterMoviesDto {
   @IsOptional()
   @IsString()
-  genre?: string;
+  genreId?: number;
 
   @IsOptional()
   @IsString()
-  rating?: string;
+  rating?: number;
 }

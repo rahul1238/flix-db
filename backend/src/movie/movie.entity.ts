@@ -5,9 +5,13 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  JoinTable,
+  OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { User } from 'src/user/user.entity';
-import { IsOptional } from 'class-validator';
+import { Review } from 'src/review/review.entity';
+import { Genre } from 'src/genre/genre.entity';
 
 @Entity()
 export class Movie {
@@ -25,12 +29,6 @@ export class Movie {
 
   @Column()
   origin: string;
-
-  @Column()
-  genre: string;
-
-  @Column({ default: 0 })
-  rating: string;
 
   @Column()
   description: string;
@@ -51,4 +49,11 @@ export class Movie {
 
   @Column()
   imageUrl: string | null;
+
+  @OneToMany(() => Review, (review) => review.movie)
+  reviews: Review[] | undefined;
+
+  @ManyToOne(() => Genre, (genre) => genre.movies, { cascade: true })
+  @JoinColumn({ name: 'genreId' })
+  genre: Genre;
 }

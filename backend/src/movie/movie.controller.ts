@@ -26,26 +26,6 @@ export class MoviesController {
     };
   }
 
-  //new endpoint
-  @Get('genre')
-  async getMoviesByGenre(
-    @Query('genre') genre: string,
-  ): Promise<{ movies: Movie[]; message: string }> {
-    if (!genre) {
-      return {
-        movies: [],
-        message: 'No Genre is found',
-      };
-    }
-
-    const movies = await this.movieService.getMoviesByGenere(genre);
-
-    return {
-      movies,
-      message: 'All movies are Fetched by their genre!',
-    };
-  }
-
   @Get('filter')
   async filterMovies(
     @Query() filterMovieDto: FilterMoviesDto,
@@ -74,8 +54,8 @@ export class MoviesController {
     @Req() req,
   ): Promise<{ succes?: boolean; data?: Movie; message?: string }> {
     try {
-      const { title, type, origin, description, genre, rating, releaseDate, status,imageUrl } = createMovieDto;
-      const data = {title, type, origin, description, genre, rating, releaseDate, status, promoter: req.user.sub,imageUrl };
+      const { title, type, origin, description, genreId, rating, releaseDate, status,imageUrl } = createMovieDto;
+      const data = {title, type, origin, description, genreId, rating, releaseDate, status, promoter: req.user.sub,imageUrl };
       console.log(data);
       console.log(req.user);
       if (req.user.role !== Role.PROMOTER && req.user.role !== Role.ADMIN) {

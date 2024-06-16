@@ -1,17 +1,23 @@
 import { Movie } from 'src/movie/movie.entity';
-import { Column, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-export class GenresModule {
+@Entity()
+export class Genre {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  genre: string;
+  name: string;
 
   @Column()
-    description: string;
-    
-    @ManyToOne(() => Movie, movie => movie.genre, { cascade: true })    // Added cascade option
-    @JoinColumn({ name: 'movieId' })    // Specify the foreign key column   
-    movie: Movie;
+  description: string;
+
+  @OneToMany(() => Movie, (movie) => movie.genre)
+  movies: Movie[];
 }
