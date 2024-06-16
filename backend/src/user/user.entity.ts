@@ -1,6 +1,16 @@
 import { Movie } from 'src/movie/movie.entity';
 import { Role } from 'src/public/common';
-import { Entity,Column, PrimaryGeneratedColumn,OneToMany } from 'typeorm';
+import { Review } from 'src/review/review.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -13,21 +23,30 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ unique: true})
+  @Column({ unique: true })
   email: string;
 
-  @Column({type:'enum',enum:Role,default:Role.USER})
-    role: Role;
+  @Column({ type: 'enum', enum: Role, default: Role.USER })
+  role: Role;
 
   @Column()
   password: string;
 
-  @Column({ default: 'active'} )
+  @Column({ default: 'active' })
   status: string;
 
-  @OneToMany(type => Movie, movie=>movie.promoter)
+  @OneToMany((type) => Movie, (movie) => movie.promoter)
   movies?: Movie[] | undefined;
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[] | undefined;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async encryptPassword() {
+    if (this.password) {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+  }
 }
-
-
-

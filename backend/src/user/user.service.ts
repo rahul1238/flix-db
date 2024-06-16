@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -14,15 +16,24 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async createUser(userDto: CreateUserDto): Promise<User | null> {
-    try {
-      const user = this.userRepository.create(userDto);
-      await this.userRepository.save(user);
-      return user;
-    } catch (error) {
-      console.error('Error while creating user:', error);
-      return null;
+  async createUser(userDto: CreateUserDto): Promise<User> {
+    const { email, username } = userDto;
+    const existingUser = await this.userRepository.findOne({
+      where: [{ username }, { email }],
+    });
+
+    if (existingUser) {
+      if (existingUser.email === email) {
+        throw new BadRequestException('Email already exists');
+      }
+      if (existingUser.username === username) {
+        throw new BadRequestException('Username already exists');
+      }
     }
+
+    const user = this.userRepository.create(userDto);
+    await this.userRepository.save(user);
+    return user;
   }
 
   async findOne(email: string): Promise<User | null> {
@@ -38,4 +49,34 @@ export class UserService {
       return null;
     }
   }
+
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<User | null> {
+    const { userId, oldPassword, newPassword } = changePasswordDto;
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      return null;
+    }
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isOldPasswordValid) {
+      throw new BadRequestException('Old password is incorrect');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  async validateUserPassword(email: string, password: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    console.log(user);
+    if (user && await bcrypt.compare(password, user.password)) {
+      return user;
+    }
+    return null;
+  }
+  
 }

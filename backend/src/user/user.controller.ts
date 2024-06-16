@@ -1,7 +1,17 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('api/users')
 export class UserController {
@@ -22,13 +32,17 @@ export class UserController {
   }
 
   @Post()
-  async createUser(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<{ user: User; message: string }> {
-    const user = await this.userService.createUser(createUserDto);
-    return {
-      user,
-      message: 'User is created successfully!',
-    };
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.createUser(createUserDto);
+  }
+
+  @Patch('change-password')
+  @UseGuards(AuthGuard)
+  async changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Req() req,
+  ): Promise<User | null> {
+    changePasswordDto.userId = req.user.sub;
+    return await this.userService.changePassword(changePasswordDto);
   }
 }
