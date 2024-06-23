@@ -3,34 +3,33 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { User } from '@/constants/data';
 import { Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { columns } from './columns';
+import { useNavigate } from 'react-router-dom';
+import { Movie } from '@/types/movies';
 
 interface ProductsClientProps {
-  data: User[];
+  data: Movie[];
 }
 
-export const UserClient: React.FC<ProductsClientProps> = ({ data }) => {
-  const router = useRouter();
+export const MoviesTable: React.FC<ProductsClientProps> = ({ data }) => {
+  const navigate = useNavigate();
 
   return (
-    <>
+    <div className='space-y-4'>
       <div className="flex items-start justify-between">
         <Heading
-          title={`Users (${data.length})`}
-          description="Manage users (Client side table functionalities.)"
+          title={`Movies (${data.length})`}
         />
         <Button
           className="text-xs md:text-sm"
-          onClick={() => router.push(`/dashboard/user/new`)}
+          onClick={() => navigate(`/dashboard/movies/new`)}
         >
           <Plus className="mr-2 h-4 w-4" /> Add New
         </Button>
       </div>
       <Separator />
-      <DataTable searchKey="name" columns={columns} data={data} />
-    </>
+      <DataTable searchKey="title" columns={columns} data={data} />
+    </div>
   );
 };

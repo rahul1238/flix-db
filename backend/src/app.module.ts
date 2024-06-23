@@ -21,17 +21,17 @@ import { ReviewModule } from './review/review.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: '192.168.29.36',
       port: 5432,
       username: process.env.DB_USER_NAME,
       password: process.env.DB_USER_PASSWORD,
       database: process.env.DB_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
-      entities:[User, __dirname + '/**/*.entity{.ts,.js}']
+      entities: [User, __dirname + '/**/*.entity{.ts,.js}']
     }),
     ReviewModule,
   ],
   controllers: [AuthController],
 })
-export class AppModule {}
+export class AppModule { }

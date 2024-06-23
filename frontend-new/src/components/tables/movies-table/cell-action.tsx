@@ -8,21 +8,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { User } from '@/constants/data';
+import { Movie } from '@/types/movies';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface CellActionProps {
-  data: User;
+  data: Movie;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const navigate = useNavigate();
 
-  const onConfirm = async () => {};
+  const onConfirm = async () => { };
 
   return (
     <>
@@ -43,7 +43,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/user/${data.id}`)}
+            onClick={() => navigate(`/dashboard/movies/${data.id}`)}
           >
             <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>

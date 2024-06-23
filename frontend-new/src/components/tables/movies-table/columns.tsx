@@ -1,10 +1,10 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
-import { User } from '@/constants/data';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Movie } from '@/types/movies';
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<Movie>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -25,20 +25,12 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false
   },
   {
-    accessorKey: 'name',
-    header: 'NAME'
+    accessorKey: 'title',
+    header: 'Title'
   },
   {
-    accessorKey: 'company',
-    header: 'COMPANY'
-  },
-  {
-    accessorKey: 'role',
-    header: 'ROLE'
-  },
-  {
-    accessorKey: 'status',
-    header: 'STATUS'
+    accessorKey: 'description',
+    header: 'Description'
   },
   {
     id: 'actions',

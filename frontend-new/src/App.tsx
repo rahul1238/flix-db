@@ -7,6 +7,8 @@ import MoviesPage from "./screens/movies";
 import '@fontsource-variable/figtree';
 import MoviePage from "./screens/movie";
 import AuthPage from "./screens/auth";
+import UserProvider from "./providers/user";
+import DashboardMoviesPage from "./screens/(dashboard)/movies";
 
 const router = createBrowserRouter([
   {
@@ -28,7 +30,19 @@ const router = createBrowserRouter([
         path: "dashboard",
         children: [{
           index: true,
-          element: <div>Hello World</div>
+          element: <div>Dashboard Home</div>
+        }, {
+          path: "movies",
+          children: [
+            {
+              index: true,
+              element: <DashboardMoviesPage />,
+            },
+            {
+              path: 'new',
+              element: <div >Dashboard New MOvie</div>,
+            },
+          ]
         }, {
           path: '*',
           element: <div>not found</div>
@@ -42,7 +56,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <RouterProvider router={router} />
+    <UserProvider>
+      <RouterProvider router={router} />
+    </UserProvider>
   );
 }
 
