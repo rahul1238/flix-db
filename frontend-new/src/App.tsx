@@ -9,6 +9,8 @@ import MoviePage from "./screens/movie";
 import AuthPage from "./screens/auth";
 import UserProvider from "./providers/user";
 import DashboardMoviesPage from "./screens/(dashboard)/movies";
+import NewMoviePage from "./screens/(dashboard)/movies/new";
+import EditMoviePage from "./screens/(dashboard)/movies/edit";
 
 const router = createBrowserRouter([
   {
@@ -40,8 +42,12 @@ const router = createBrowserRouter([
             },
             {
               path: 'new',
-              element: <div >Dashboard New MOvie</div>,
+              element: <NewMoviePage />
             },
+            {
+              path: 'edit/:id',
+              element: <EditMoviePage />
+            }
           ]
         }, {
           path: '*',

@@ -9,9 +9,9 @@ import autoAnimate from '@formkit/auto-animate'
 export default function DashboardLayout() {
   const { user } = useUser();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!user) navigate('/login');
-  }, [user])
+  // useEffect(() => {
+  //   if (!user) navigate('/login');
+  // }, [user])
   const parent = useRef(null)
 
   useEffect(() => {
