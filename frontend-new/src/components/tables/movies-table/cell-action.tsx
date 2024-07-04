@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { get } from "lodash";
 import { toast } from "sonner";
+import { refetchDashboardMovies } from "@/screens/(dashboard)/movies";
 
 interface CellActionProps {
 	data: Movie;
@@ -37,13 +38,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 				loading: "Loading...",
 				success: (data) => {
 					setOpen(false);
+					refetchDashboardMovies();
 					return `${data.name} movie has been deleted`;
 				},
 				error: "Error",
 			},
 		);
 	};
-	console.log({ data });
 	return (
 		<>
 			<AlertModal

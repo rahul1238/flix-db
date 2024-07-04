@@ -28,7 +28,12 @@ import {
 	CommandGroup,
 	CommandInput,
 	CommandItem,
+	CommandList,
 } from "@/components/ui/command";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { create, isEmpty } from "lodash";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const formSchema = z.object({
 	title: z.string({
@@ -53,10 +58,53 @@ export default function MovieForm() {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			title: "",
+			origin: "",
 		},
 	});
+	const { data: genres, isLoading: areGenresLoading } = useQuery({
+		queryKey: ["genres"],
+		queryFn: async () => {
+			//FIXME: replace with actual API call
+			await new Promise<void>((resolve) => {
+				setTimeout(() => {
+					resolve();
+				}, 3000);
+			});
+			return [
+				{ label: "Action", value: "action" },
+				{ label: "Adventure", value: "adventure" },
+				{ label: "Comedy", value: "comedy" },
+				{ label: "Drama", value: "drama" },
+				{ label: "Fantasy", value: "fantasy" },
+				{ label: "Horror", value: "horror" },
+				{ label: "Mystery", value: "mystery" },
+				{ label: "Romance", value: "romance" },
+				{ label: "Sci-Fi", value: "sci-fi" },
+				{ label: "Thriller", value: "thriller" },
+			];
+		},
+	});
+	const navigate = useNavigate();
+	const createMovie = useMutation({
+		mutationFn: async (values: z.infer<typeof formSchema>) => {
+			await new Promise<void>((resolve) => {
+				setTimeout(() => {
+					resolve();
+				}, 3000);
+			});
+			console.log(values);
+		},
+		onSuccess: () => {},
+	});
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values);
+		toast.promise(createMovie.mutateAsync(values), {
+			loading: "Creating movie...",
+			success: () => {
+				navigate("..");
+				return "Movie created successfully";
+			},
+			error: "Failed to create movie",
+		});
 	}
 	return (
 		<Form {...form}>
@@ -69,6 +117,24 @@ export default function MovieForm() {
 							<FormLabel>Title</FormLabel>
 							<FormControl>
 								<Input placeholder="Inception" {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="origin"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Origin</FormLabel>
+							<FormControl>
+								<Input
+									placeholder={
+										"Hollywood/ Bollywood/ Nollywood/ Kollywood/ Tollywood..."
+									}
+									{...field}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -100,6 +166,7 @@ export default function MovieForm() {
 								<PopoverTrigger asChild>
 									<FormControl>
 										<Button
+											disabled={areGenresLoading}
 											variant="outline"
 											role="combobox"
 											className={cn(
@@ -107,12 +174,13 @@ export default function MovieForm() {
 												!field.value && "text-muted-foreground",
 											)}
 										>
-											{/* {field.value
-                                                ? languages.find(
-                                                    (language) => language.value === field.value
-                                                )?.label
-                                                : "Select Genre"} */}
-											Select Genre
+											{areGenresLoading
+												? "Loading..."
+												: field.value
+												  ? genres?.find(
+															(language) => language.value === field.value,
+													  )?.label
+												  : "Select Genre"}
 											<ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
 										</Button>
 									</FormControl>
@@ -122,25 +190,27 @@ export default function MovieForm() {
 										<CommandInput placeholder="Search genre..." />
 										<CommandEmpty>No Genre found.</CommandEmpty>
 										<CommandGroup>
-											{/* {new Array(4).fill(0).map((language) => (
-                                                <CommandItem
-                                                    value={language.label}
-                                                    key={language.value}
-                                                    onSelect={() => {
-                                                        form.setValue("genre", language.value)
-                                                    }}
-                                                >
-                                                    <Check
-                                                        className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            language.value === field.value
-                                                                ? "opacity-100"
-                                                                : "opacity-0"
-                                                        )}
-                                                    />
-                                                    {language.label}
-                                                </CommandItem>
-                                            ))} */}
+											<CommandList>
+												{genres?.map((genre) => (
+													<CommandItem
+														value={genre.label}
+														key={genre.value}
+														onSelect={() => {
+															form.setValue("genre", genre.value);
+														}}
+													>
+														<Check
+															className={cn(
+																"mr-2 h-4 w-4",
+																genre.value === field.value
+																	? "opacity-100"
+																	: "opacity-0",
+															)}
+														/>
+														{genre.label}
+													</CommandItem>
+												))}
+											</CommandList>
 										</CommandGroup>
 									</Command>
 								</PopoverContent>
