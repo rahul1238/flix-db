@@ -17,7 +17,7 @@ export default function DashboardMoviesPage() {
 	const { data: movies } = useQuery({
 		queryKey: getDashboardMoviesQueryKey(),
 		queryFn: async () => {
-			const id = toast.loading("Loading movies...", {
+			const id = toast.loading("Refetching movies...", {
 				position: "top-right",
 			});
 			await new Promise<void>((resolve) => {

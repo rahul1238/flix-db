@@ -30,10 +30,15 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { create, isEmpty } from "lodash";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { create, isEmpty, set } from "lodash";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import CreateGenreForm from "./create-genre";
+import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
+const getGenresQueryKey = () => ["genres"];
 
 const formSchema = z.object({
 	title: z.string({
@@ -62,7 +67,7 @@ export default function MovieForm() {
 		},
 	});
 	const { data: genres, isLoading: areGenresLoading } = useQuery({
-		queryKey: ["genres"],
+		queryKey: getGenresQueryKey,
 		queryFn: async () => {
 			//FIXME: replace with actual API call
 			await new Promise<void>((resolve) => {
@@ -106,8 +111,10 @@ export default function MovieForm() {
 			error: "Failed to create movie",
 		});
 	}
+	const portalRef = useRef<HTMLDivElement>(null);
 	return (
 		<Form {...form}>
+			<div ref={portalRef} />
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 				<FormField
 					control={form.control}
@@ -188,7 +195,10 @@ export default function MovieForm() {
 								<PopoverContent className="w-[200px] p-0">
 									<Command>
 										<CommandInput placeholder="Search genre..." />
-										<CommandEmpty>No Genre found.</CommandEmpty>
+										<CommandEmpty>
+											No Genre found.
+											<CreateGenre />
+										</CommandEmpty>
 										<CommandGroup>
 											<CommandList>
 												{genres?.map((genre) => (
@@ -269,3 +279,24 @@ export default function MovieForm() {
 		</Form>
 	);
 }
+
+const CreateGenre = () => {
+	const [open, setOpen] = useState(false);
+	const queryClient = useQueryClient();
+	const onSuccess = () => {
+		queryClient?.refetchQueries({
+			queryKey: getGenresQueryKey(),
+		});
+		setOpen(false);
+	};
+	return (
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger>
+				<Button className="mt-4">Create New Genre</Button>
+			</PopoverTrigger>
+			<PopoverContent>
+				<CreateGenreForm onSuccess={onSuccess} />
+			</PopoverContent>
+		</Popover>
+	);
+};
