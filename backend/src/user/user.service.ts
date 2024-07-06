@@ -70,13 +70,15 @@ export class UserService {
     return user;
   }
 
-  async validateUserPassword(email: string, password: string): Promise<User | null> {
+  async validateUserPassword(
+    email: string,
+    password: string,
+  ): Promise<User | null> {
     const user = await this.userRepository.findOne({ where: { email } });
     console.log(user);
-    if (user && await bcrypt.compare(password, user.password)) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       return user;
     }
     return null;
   }
-  
 }

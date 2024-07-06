@@ -5,9 +5,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
-  JoinTable,
   OneToMany,
-  ManyToMany,
 } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { Review } from 'src/review/review.entity';
@@ -43,17 +41,17 @@ export class Movie {
   })
   status: Status;
 
-  @ManyToOne((type) => User, (user) => user.movies)
+  @ManyToOne(() => User, (user) => user.movies)
   @JoinColumn({ name: 'promoter_id' })
   promoter: User;
 
-  @Column()
-  imageUrl: string | null;
+  @Column('simple-array', { nullable: true })
+  imageUrl: string[] | null;
 
   @OneToMany(() => Review, (review) => review.movie)
   reviews: Review[] | undefined;
 
-  @ManyToOne(() => Genre, (genre) => genre.movies, { cascade: true })
+  @ManyToOne(() => Genre, (genre) => genre.movies)
   @JoinColumn({ name: 'genreId' })
   genre: Genre;
 }

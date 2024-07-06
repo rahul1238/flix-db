@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsDate, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDate,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 import { Status, Type } from 'src/public/common';
 
 export class CreateMovieDto {
@@ -33,7 +39,11 @@ export class CreateMovieDto {
   @IsString()
   status: Status;
 
-  @IsString()
-    @IsOptional()
-  imageUrl: string;
+  @IsOptional()
+  @IsString({ each: true })
+  imageUrl?: string[];
+
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
 }

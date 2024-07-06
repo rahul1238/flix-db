@@ -21,7 +21,7 @@ export class MoviesController {
       };
     }
     return {
-      message: 'No movies found in the databse, Please Add them',
+      message: 'No movies found in the database, Please Add them',
       movies,
     };
   }
@@ -54,8 +54,31 @@ export class MoviesController {
     @Req() req,
   ): Promise<{ succes?: boolean; data?: Movie; message?: string }> {
     try {
-      const { title, type, origin, description, genreId, rating, releaseDate, status,imageUrl } = createMovieDto;
-      const data = {title, type, origin, description, genreId, rating, releaseDate, status, promoter: req.user.sub,imageUrl };
+      const {
+        title,
+        type,
+        origin,
+        description,
+        genreId,
+        rating,
+        releaseDate,
+        status,
+        imageUrl,
+        userId,
+      } = createMovieDto;
+      const data = {
+        title,
+        type,
+        origin,
+        description,
+        genreId,
+        rating,
+        releaseDate,
+        status,
+        promoter: req.user.sub,
+        imageUrl,
+        userId,
+      };
       console.log(data);
       console.log(req.user);
       if (req.user.role !== Role.PROMOTER && req.user.role !== Role.ADMIN) {

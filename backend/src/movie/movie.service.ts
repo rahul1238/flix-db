@@ -17,7 +17,6 @@ export class MoviesService {
     return await this.moviesRepository.find();
   }
 
-  //filter movie by rating and genre
   async filterMovies(filterMovieDto: FilterMoviesDto): Promise<Movie[]> {
     const { rating, genreId } = filterMovieDto;
     const queryBuilder = this.moviesRepository.createQueryBuilder('movie');
@@ -35,7 +34,6 @@ export class MoviesService {
     return queryBuilder.getMany();
   }
 
-  //create Movie
   async createMovie(createMovieDto: CreateMovieDto): Promise<Movie | null> {
     try {
       const movie = this.moviesRepository.create(createMovieDto);
@@ -46,7 +44,6 @@ export class MoviesService {
     }
   }
 
-  //update movie
   async updateMovie(
     movieId: number,
     updateMovieDto: UpdateMovieDto,
