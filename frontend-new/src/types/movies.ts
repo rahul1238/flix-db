@@ -18,7 +18,6 @@ export type User = {
     name: string;
     email: string;
     role: Role;
-    password: string;
     status: string;
     movies?: Movie[] | undefined;
 }

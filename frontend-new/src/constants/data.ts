@@ -94,40 +94,22 @@ export const users: User[] = [
 
 export const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
+    title: 'Home',
     href: '/dashboard',
-    icon: 'dashboard',
-    label: 'Dashboard'
+    icon: 'home',
+    label: 'Home'
   },
   {
-    title: 'User',
-    href: '/dashboard/user',
-    icon: 'user',
-    label: 'user'
+    title: 'Movies',
+    href: '/dashboard/movies',
+    icon: 'popcorn',
+    label: 'Movies'
   },
   {
-    title: 'Employee',
-    href: '/dashboard/employee',
-    icon: 'employee',
-    label: 'employee'
-  },
-  {
-    title: 'Profile',
-    href: '/dashboard/profile',
-    icon: 'profile',
-    label: 'profile'
-  },
-  {
-    title: 'Kanban',
-    href: '/dashboard/kanban',
-    icon: 'kanban',
-    label: 'kanban'
-  },
-  {
-    title: 'Login',
+    title: 'Logout',
     href: '/',
-    icon: 'login',
-    label: 'login'
+    icon: 'logout',
+    label: 'Logout'
   }
 ];
 export const movies = [
