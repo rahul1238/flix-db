@@ -37,6 +37,7 @@ import { toast } from "sonner";
 import CreateGenreForm from "./create-genre";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import FileDrop from "@/components/file-drop";
 
 const getGenresQueryKey = () => ["genres"];
 
@@ -56,6 +57,9 @@ const formSchema = z.object({
 	releaseDate: z.date({
 		required_error: "Release date is required",
 	}),
+	images: z.any().refine((value) => {
+		return !isEmpty(value);
+	}),
 });
 
 export default function MovieForm() {
@@ -67,7 +71,7 @@ export default function MovieForm() {
 		},
 	});
 	const { data: genres, isLoading: areGenresLoading } = useQuery({
-		queryKey: getGenresQueryKey,
+		queryKey: getGenresQueryKey(),
 		queryFn: async () => {
 			//FIXME: replace with actual API call
 			await new Promise<void>((resolve) => {
@@ -99,7 +103,7 @@ export default function MovieForm() {
 			});
 			console.log(values);
 		},
-		onSuccess: () => {},
+		onSuccess: () => { },
 	});
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		toast.promise(createMovie.mutateAsync(values), {
@@ -184,10 +188,10 @@ export default function MovieForm() {
 											{areGenresLoading
 												? "Loading..."
 												: field.value
-												  ? genres?.find(
-															(language) => language.value === field.value,
-													  )?.label
-												  : "Select Genre"}
+													? genres?.find(
+														(language) => language.value === field.value,
+													)?.label
+													: "Select Genre"}
 											<ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
 										</Button>
 									</FormControl>
@@ -273,6 +277,11 @@ export default function MovieForm() {
 							<FormMessage />
 						</FormItem>
 					)}
+				/>
+				<FormField
+					control={form.control}
+					name="images"
+					render={FileDrop}
 				/>
 				<Button type="submit">Submit</Button>
 			</form>
