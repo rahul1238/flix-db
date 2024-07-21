@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { User } from "./user/user.entity";
 import { ReviewModule } from "./review/review.module";
+import { RolesGuard } from "./auth/roles.guard";
 
 @Module({
 	imports: [
@@ -33,5 +34,6 @@ import { ReviewModule } from "./review/review.module";
 		ReviewModule,
 	],
 	controllers: [AuthController],
+	providers: [RolesGuard],
 })
 export class AppModule {}

@@ -28,7 +28,7 @@ export class Movie {
   @Column()
   origin: string;
 
-  @Column()
+  @Column({ type: 'text' })
   description: string;
 
   @Column({ type: 'date' })
@@ -49,7 +49,7 @@ export class Movie {
   imageUrl: string[] | null;
 
   @OneToMany(() => Review, (review) => review.movie)
-  reviews: Review[] | undefined;
+  reviews: Review[];
 
   @ManyToOne(() => Genre, (genre) => genre.movies)
   @JoinColumn({ name: 'genreId' })

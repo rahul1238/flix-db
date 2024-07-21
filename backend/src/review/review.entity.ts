@@ -13,17 +13,17 @@ export class Review {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', width: 1 })
   rating: number;
 
   @Column({ type: 'text' })
   feedback: string;
 
-  @ManyToOne(() => Movie, (movie) => movie.reviews, { cascade: true })
+  @ManyToOne(() => Movie, (movie) => movie.reviews)
   @JoinColumn({ name: 'movieId' })
   movie: Movie;
 
-  @ManyToOne(() => User, (user) => user.reviews, { cascade: true })
+  @ManyToOne(() => User, (user) => user.reviews)
   @JoinColumn({ name: 'userId' })
   user: User;
 }

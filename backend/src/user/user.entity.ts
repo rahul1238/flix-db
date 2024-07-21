@@ -30,16 +30,17 @@ export class User {
   role: Role;
 
   @Column()
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Column({ default: 'active' })
   status: string;
 
-  @OneToMany((type) => Movie, (movie) => movie.promoter)
-  movies?: Movie[] | undefined;
+  @OneToMany(() => Movie, (movie) => movie.promoter)
+  movies: Movie[];
 
   @OneToMany(() => Review, (review) => review.user)
-  reviews: Review[] | undefined;
+  reviews: Review[];
 
   @BeforeInsert()
   @BeforeUpdate()

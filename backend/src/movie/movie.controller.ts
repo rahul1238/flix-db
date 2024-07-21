@@ -1,4 +1,16 @@
-import {Body,Controller,Get,Post,Query,Patch,Param,UseGuards, Req,} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Patch,
+  Param,
+  UseGuards,
+  Req,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { MoviesService } from './movie.service';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -7,6 +19,7 @@ import { FilterMoviesDto } from './dto/filter-movie.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from 'src/public/common';
+import { classToPlain } from 'class-transformer';
 
 @Controller('api/movies')
 export class MoviesController {
@@ -52,59 +65,29 @@ export class MoviesController {
   async createMovie(
     @Body() createMovieDto: CreateMovieDto,
     @Req() req,
-  ): Promise<{ succes?: boolean; data?: Movie; message?: string }> {
-    try {
-      const {
-        title,
-        type,
-        origin,
-        description,
-        genreId,
-        rating,
-        releaseDate,
-        status,
-        imageUrl,
-        userId,
-      } = createMovieDto;
-      const data = {
-        title,
-        type,
-        origin,
-        description,
-        genreId,
-        rating,
-        releaseDate,
-        status,
-        promoter: req.user.sub,
-        imageUrl,
-        userId,
-      };
-      console.log(data);
-      console.log(req.user);
-      if (req.user.role !== Role.PROMOTER && req.user.role !== Role.ADMIN) {
-        return {
-          succes: false,
-          message: 'You are not allowed to create movie .',
-        };
-      }
-      const addedMovie = await this.movieService.createMovie(data);
+  ): Promise<{ success: boolean; data?: Movie; message: string }> {
+    if (![Role.PROMOTER, Role.ADMIN].includes(req.user.role)) {
+      throw new HttpException(
+        { success: false, message: 'Not authorized to create a movie' },
+        HttpStatus.FORBIDDEN,
+      );
+    }
 
-      if (!addedMovie) {
-        return {
-          succes: false,
-          message: 'error while creating the entry.',
-        };
-      }
+    createMovieDto.promoterId = req.user.sub;
+
+    try {
+      const addedMovie = await this.movieService.createMovie(createMovieDto);
 
       return {
-        succes: true,
-        data: addedMovie,
-        message: 'Movie Added Successfully!',
+        success: true,
+        data: classToPlain(addedMovie) as Movie,
+        message: 'Movie added successfully!',
       };
     } catch (error) {
+      console.error('Error while creating movie:', error);
       return {
-        succes: false,
-        message: 'Error while creating entry in database.',
+        success: false,
+        message: error.message || 'Error while creating entry in database.',
       };
     }
   }

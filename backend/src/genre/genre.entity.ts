@@ -2,7 +2,6 @@ import { Movie } from 'src/movie/movie.entity';
 import {
   Entity,
   Column,
-  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,7 +14,7 @@ export class Genre {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ type: 'text' })
   description: string;
 
   @OneToMany(() => Movie, (movie) => movie.genre)

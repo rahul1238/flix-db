@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcrypt';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class UserService {
@@ -12,10 +13,13 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
+
+  //getAllUsers method
   async getAllUsers(): Promise<User[]> {
     return await this.userRepository.find();
   }
 
+  //create
   async createUser(userDto: CreateUserDto): Promise<User> {
     const { email, username } = userDto;
     const existingUser = await this.userRepository.findOne({
@@ -33,9 +37,10 @@ export class UserService {
 
     const user = this.userRepository.create(userDto);
     await this.userRepository.save(user);
-    return user;
+    return instanceToPlain(user) as User;
   }
 
+  //find user by email
   async findOne(email: string): Promise<User | null> {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
@@ -50,6 +55,7 @@ export class UserService {
     }
   }
 
+  //change password
   async changePassword(
     changePasswordDto: ChangePasswordDto,
   ): Promise<User | null> {
@@ -70,6 +76,7 @@ export class UserService {
     return user;
   }
 
+  //validate user password
   async validateUserPassword(
     email: string,
     password: string,

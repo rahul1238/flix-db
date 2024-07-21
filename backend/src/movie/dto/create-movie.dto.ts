@@ -1,49 +1,37 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsDate,
-  IsNumber,
-  IsOptional,
-} from 'class-validator';
-import { Status, Type } from 'src/public/common';
+import { IsString, IsEnum, IsDateString, IsOptional, IsArray } from 'class-validator';
+import { Type, Status } from 'src/public/common';
 
 export class CreateMovieDto {
-  @IsNotEmpty()
   @IsString()
   title: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsEnum(Type)
   type: Type;
 
-  @IsNotEmpty()
   @IsString()
   origin: string;
 
-  @IsNotEmpty()
-  @IsString()
-  genreId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  rating: string;
-
-  @IsNotEmpty()
   @IsString()
   description: string;
 
-  @IsNotEmpty()
-  @IsDate()
+  @IsDateString()
   releaseDate: Date;
 
-  @IsString()
-  status: Status;
-
+  @IsEnum(Status)
   @IsOptional()
-  @IsString({ each: true })
+  status?: Status;
+
+  @IsArray()
+  @IsOptional()
   imageUrl?: string[];
 
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
+  @IsString()
+  genreId: number;
+
+  @IsString()
+  @IsOptional()
+  rating?: string;
+
+  @IsString()
+  promoterId: number;
 }
