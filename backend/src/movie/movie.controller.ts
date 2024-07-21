@@ -1,4 +1,4 @@
-import {Body,Controller,Get,Post,Query,Patch,Param,UseGuards, Req,} from '@nestjs/common';
+import {Body,Controller,Get,Post,Query,Patch,Param,UseGuards,Req,UploadedFiles,UseInterceptors,} from '@nestjs/common';
 import { MoviesService } from './movie.service';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -7,10 +7,17 @@ import { FilterMoviesDto } from './dto/filter-movie.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from 'src/public/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { UploadService } from 'src/upload/upload.service';
 
 @Controller('api/movies')
 export class MoviesController {
-  constructor(private readonly movieService: MoviesService) {}
+
+  constructor(private readonly movieService: MoviesService,
+    private readonly uploadService: UploadService,
+  ) {}
+
+
   @Get()
   async getAllMovies(): Promise<{ movies: Movie[]; message: string }> {
     const movies = await this.movieService.getAllMovies();
@@ -25,6 +32,7 @@ export class MoviesController {
       movies,
     };
   }
+
 
   @Get('filter')
   async filterMovies(
@@ -45,42 +53,28 @@ export class MoviesController {
     }
   }
 
+
   //add  movie
   @Post()
   @UseGuards(AuthGuard)
   @Roles(Role.PROMOTER, Role.ADMIN)
-  async createMovie(
-    @Body() createMovieDto: CreateMovieDto,
-    @Req() req,
-  ): Promise<{ succes?: boolean; data?: Movie; message?: string }> {
+  @UseInterceptors(FilesInterceptor('image'))
+  async createMovie(@UploadedFiles() images:Express.Multer.File[], @Body() createMovieDto: CreateMovieDto,@Req() req,): Promise<{ succes?: boolean; data?: Movie; message?:string }> {
     try {
-      const {
-        title,
-        type,
-        origin,
-        description,
-        genreId,
-        rating,
-        releaseDate,
-        status,
-        imageUrl,
-        userId,
-      } = createMovieDto;
-      const data = {
-        title,
-        type,
-        origin,
-        description,
-        genreId,
-        rating,
-        releaseDate,
-        status,
-        promoter: req.user.sub,
-        imageUrl,
-        userId,
-      };
+      const {title,type,origin,description,genreId,rating,releaseDate,status,} = createMovieDto;
+
+      const imageUrls:string[]=[];
+      if(images.length>0){
+        images.forEach(async (image)=>{
+          const imagePath=await this.uploadService.uploadImage(image);
+          imageUrls.push(imagePath);
+        });
+      }
+      console.log(imageUrls);
+
+      const data = {title,type,origin,description,genreId,rating,releaseDate,status,promoter_id: req.user.sub,imageUrl:imageUrls,};
       console.log(data);
-      console.log(req.user);
+      ;
       if (req.user.role !== Role.PROMOTER && req.user.role !== Role.ADMIN) {
         return {
           succes: false,
@@ -109,6 +103,7 @@ export class MoviesController {
     }
   }
 
+
   @Patch(':id')
   async updateMovie(
     @Param('id') movieId: number,
@@ -122,10 +117,7 @@ export class MoviesController {
     }
 
     try {
-      const movie = await this.movieService.updateMovie(
-        movieId,
-        updateMovieDto,
-      );
+      const movie = await this.movieService.updateMovie(movieId,updateMovieDto,);
       if (!movie) {
         return {
           success: false,

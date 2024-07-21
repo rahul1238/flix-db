@@ -1,4 +1,4 @@
-import { Type } from 'src/public/common';
+import { movieType } from 'src/public/common';
 import { IsString, IsNumber, IsDate } from 'class-validator';
 
 export class UpdateMovieDto {
@@ -6,7 +6,7 @@ export class UpdateMovieDto {
   title: string;
 
   @IsString()
-  type: Type;
+  type: movieType;
 
   @IsString()
   origin: string;

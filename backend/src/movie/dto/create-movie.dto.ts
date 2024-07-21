@@ -5,7 +5,8 @@ import {
   IsNumber,
   IsOptional,
 } from 'class-validator';
-import { Status, Type } from 'src/public/common';
+import { Status, movieType } from 'src/public/common';
+import { Type } from 'class-transformer';
 
 export class CreateMovieDto {
   @IsNotEmpty()
@@ -14,7 +15,7 @@ export class CreateMovieDto {
 
   @IsNotEmpty()
   @IsString()
-  type: Type;
+  type: movieType;
 
   @IsNotEmpty()
   @IsString()
@@ -40,10 +41,6 @@ export class CreateMovieDto {
   status: Status;
 
   @IsOptional()
-  @IsString({ each: true })
-  imageUrl?: string[];
-
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
+  @Type(() => File)
+  image?: Express.Multer.File[];
 }

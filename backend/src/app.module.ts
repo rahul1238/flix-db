@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { User } from "./user/user.entity";
 import { ReviewModule } from "./review/review.module";
+import { UploadModule } from "./upload/upload.module";
 
 @Module({
 	imports: [
@@ -15,7 +16,7 @@ import { ReviewModule } from "./review/review.module";
 		GenresModule,
 		UserModule,
 		AuthModule,
-
+		UploadModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
 		}),

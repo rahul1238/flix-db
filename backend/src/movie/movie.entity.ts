@@ -1,4 +1,4 @@
-import { Status, Type } from 'src/public/common';
+import { Status,movieType } from 'src/public/common';
 import {
   Entity,
   Column,
@@ -21,9 +21,9 @@ export class Movie {
 
   @Column({
     type: 'enum',
-    enum: Type,
+    enum: movieType,
   })
-  type: Type;
+  type: movieType;
 
   @Column()
   origin: string;
