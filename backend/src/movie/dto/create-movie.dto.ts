@@ -26,8 +26,9 @@ export class CreateMovieDto {
   @IsOptional()
   imageUrl?: string[];
 
-  @IsNumber()
-  genreId: number;
+  @IsArray()
+  @IsNumber({}, { each: true })
+  genreIds: number[];
 
   @IsString()
   @IsOptional()

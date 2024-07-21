@@ -1,4 +1,4 @@
-import { Status,movieType } from 'src/public/common';
+import { Status, movieType } from 'src/public/common';
 import {
   Entity,
   Column,
@@ -6,6 +6,8 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable
 } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { Review } from 'src/review/review.entity';
@@ -51,7 +53,17 @@ export class Movie {
   @OneToMany(() => Review, (review) => review.movie)
   reviews: Review[];
 
-  @ManyToOne(() => Genre, (genre) => genre.movies)
-  @JoinColumn({ name: 'genreId' })
-  genre: Genre;
+  @ManyToMany(() => Genre, (genre) => genre.movies)
+  @JoinTable({
+    name: 'movie_genres',
+    joinColumn: {
+      name: 'movie',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'genre',
+      referencedColumnName: 'id',
+    },
+  })
+  genres: Genre[];
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository,In } from 'typeorm';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
@@ -41,12 +41,10 @@ export class MoviesService {
   }
 
   async createMovie(createMovieDto: CreateMovieDto): Promise<Movie> {
-    const { genreId, promoterId, ...movieData } = createMovieDto;
+    const { genreIds, promoterId, ...movieData } = createMovieDto;
 
-    const genre = await this.genreRepository.findOne({
-      where: { id: genreId },
-    });
-    if (!genre) {
+    const genres = await this.genreRepository.findBy({ id: In( genreIds) });
+    if (!genres) {
       throw new Error('Genre not found');
     }
 
@@ -59,7 +57,7 @@ export class MoviesService {
 
     const movie = this.moviesRepository.create({
       ...movieData,
-      genre,
+      genres,
       promoter,
     });
 

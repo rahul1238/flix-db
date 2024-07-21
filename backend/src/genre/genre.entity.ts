@@ -2,7 +2,7 @@ import { Movie } from 'src/movie/movie.entity';
 import {
   Entity,
   Column,
-  OneToMany,
+  ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -17,6 +17,6 @@ export class Genre {
   @Column({ type: 'text' })
   description: string;
 
-  @OneToMany(() => Movie, (movie) => movie.genre)
+  @ManyToMany(() => Movie, (movie) => movie.genres)
   movies: Movie[];
 }

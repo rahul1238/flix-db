@@ -1,9 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Review } from "./review.entity";
-import { CreateReviewDto } from "./dto/create-review.dto";
-import { Movie } from "../movie/movie.entity";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Review } from './review.entity';
+import { CreateReviewDto } from './dto/create-review.dto';
+import { Movie } from '../movie/movie.entity';
+import { User } from 'src/user/user.entity';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class ReviewService {
@@ -12,64 +14,60 @@ export class ReviewService {
     private reviewRepository: Repository<Review>,
     @InjectRepository(Movie)
     private movieRepository: Repository<Movie>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
-  async createReview(createReviewDto: CreateReviewDto): Promise<{success?: boolean, message?: string, data?: Review}> {
-   try {
-     const { rating, feedback, movieId } = createReviewDto;
-     console.log(rating);
-     
-     const movie = await this.movieRepository.findOne({where: {id: movieId}});
- 
-     if (!movie) {
-       throw new Error("Movie not found");
-     }
- 
-     const review = new Review();
-     review.rating = Number(rating);
-     review.feedback = feedback;
-     review.movie = movie;
- 
-     const reviews = await this.reviewRepository.save(review);
+  async createReview(createReviewDto: CreateReviewDto): Promise<{ success?: boolean; message?: string; data?: Review }> {
+    try {
+      const { userId, movieId, ...reviewData } = createReviewDto;
 
-     return {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+
+      const movie = await this.movieRepository.findOne({where: { id: movieId }});
+      const review = this.reviewRepository.create({...reviewData,user,movie});
+      const reviews = await this.reviewRepository.save(review);
+
+      return {
         success: true,
-        message: "Reviews added succesfully",
-        data: reviews,
-     }
-   } catch (error) {
-    return {
+        message: 'Review added succesfully',
+        data: instanceToPlain(reviews) as Review
+      };
+    } catch (error) {
+      return {
         success: false,
-        message: "Cannot get the movie"
+        message: 'Error occured while adding reviews',
+      };
     }
-   }
   }
 
-  async getMovieReviews(movieId: number): Promise<{success?: boolean, data?: Review[], message?: string}> {
+  async getMovieReviews(
+    movieId: number,
+  ): Promise<{ success?: boolean; data?: Review[]; message?: string }> {
     try {
-        const moviesReview =  await this.reviewRepository.find({
-          where: { movie: { id: movieId } },
-          relations: ['movie'],
-        });
-    
-        if(moviesReview.length === 0) {
-            return {
-                success: false,
-                data: [],
-                message: "Movies review did not found",
-            }
-        }
-    
+      const moviesReview = await this.reviewRepository.find({
+        where: { movie: { id: movieId } },
+        relations: ['movie'],
+      });
+
+      if (moviesReview.length === 0) {
         return {
-            success: true,
-            data: moviesReview,
-            message: "Movies Fetched Successfuly"
-        }
+          success: false,
+          data: [],
+          message: 'Movies review did not found',
+        };
+      }
+
+      return {
+        success: true,
+        data: moviesReview,
+        message: 'Movies Fetched Successfuly',
+      };
     } catch (error) {
-        return {
-            success: false,
-            message: "Error while getting movies review"
-        }
+      return {
+        success: false,
+        message: 'Error while getting movies review',
+      };
     }
   }
 }
