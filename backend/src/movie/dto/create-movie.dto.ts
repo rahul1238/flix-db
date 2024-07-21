@@ -1,12 +1,19 @@
+import {
+  IsNotEmpty,
+  IsDate,
+  IsNumber,
+} from 'class-validator';
+import { Status, movieType } from 'src/public/common';
+import { Type } from 'class-transformer';
 import { IsString, IsEnum, IsDateString, IsOptional, IsArray } from 'class-validator';
-import { Type, Status } from 'src/public/common';
 
 export class CreateMovieDto {
   @IsString()
   title: string;
 
-  @IsEnum(Type)
-  type: Type;
+  @IsNotEmpty()
+  @IsString()
+  type: movieType;
 
   @IsString()
   origin: string;
@@ -23,6 +30,7 @@ export class CreateMovieDto {
 
   @IsArray()
   @IsOptional()
+  
   imageUrl?: string[];
 
   @IsString()

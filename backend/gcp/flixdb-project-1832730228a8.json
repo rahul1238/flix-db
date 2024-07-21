@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "flixdb-project",
+  "private_key_id": "1832730228a8c862eb7107dc98e938a96d5efc1b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC5hYdidcJCsdKF\nJDjkV3zowNwOUvVPbO6JaE/pbKUFoBrYkZEC3ihKlYholIaH5AxEjJ15cteg5s3q\nCIwQMOPRHVGn+v3cCdAj312ZKnl3snd2SxJphx6Tw4Ab5ieNG4oDXEl20aOUKWDz\nWRolAB5aWj+VWFTcQ6QXVJBSmVXKsP5kixafu5zqDXtrAhMHNpsoMWp1QTeeM5m6\nXBD/VfCzKxrBhHi1DCZVFsrdPoMKaefBq4WvSQy1Y+kerN2Ti2a5ZJn7QPeD1SE3\nu5FNGiemU1cx2CopIysZ7aSajxMVBgYA6ma94XSKS1c73qOZPIDea8kDbl4ANR1b\nwFBh0P4jAgMBAAECggEAO5xeLhLsgoWkwUcsSKKb7iXaD3g0fnrgAqLT2osgUzho\np+HOGH/NrnlxxTjEKXHrRzNvfhCanIbM70Aj0SgEa7LiA/mwDD3S9VPWPVragM2F\neSsSFXpnJs+QoGZJmxuYMxA6QsWFrBvHnSmqLu1k019gQtqJGeVaGmz/mqrOWDwO\nCaF5Gj7IBGkDRnxNyNPdaxJWK6nuYJoUruR9dZ3qR1ZlKZVC+4oD7P9XM5MTt+Up\nH6k8IPxmPg4z75KasfrkELf9HjwkBe1W/oO7Ml0Vmc91zdHDKXAKHsnVt8RlFZ9h\nwin95OeQQZNbehlVoc20O297B1gwjahZESTFoeSg0QKBgQDyZn1GZKEtrQE8CSqX\nuogXm3KsUKxpwCRb0DYYg2c72h+P5L4qVbLU+ovW+iMBngFpc6IVBIGOXyps1BTk\nGSR+EP5RZXh4qTJItQazqRxW2aVVOshTcMBcrKiO0k+M0F9AUf/sL8JJUogtaeRn\nfo2M61BCwduc8XVs6NBsRPMFDwKBgQDD7hwsh4wZLW0FNJMVaTS/U3b6RVrjYO9m\nQ4L3di18ZnhjpP5d7G4D7R2Di9eCKlY+4mttYc6gd8Wt0kISE5u3xHs4PlXgi8tR\nKEyJ7VGHSbyscBnqw7nUsJItkOJeMuWO1jwAj9rIyB465Sa1Pv3ysh7G30g1kjoT\nfDoWXH49rQKBgQDM5U89gnAvsM6bVdA4AwdolRCAkYy7sxvItB4V6HUJxZ3qPttz\n447Psp0j8bpHcq0U2xaFl5J/qvesmDS0foA3Q9wFJ7WGoNaNWN+6W9dFnqG/gnm0\n9ljTvWqZlzKA/92T+/xNRC2BVw8e/CSCSxoRpRLp6v3dEslEbyNGcZ3OhwKBgB8J\nw3DScEE0zwZ6E6rapb6BbGGtRv6qRoJ+w2qMUBxa50txwdIDOFJq57gFGTjHmC4S\nFE6ZpfAJyUkF++19Kbfs6lA4n8YYnzbWGXnoHHhAGCGBCLoGE5Q7/Iw3XYTqry73\nhT3ZjCEugot17bHcrsIZsYJzsK674XNgxJryQBVpAoGBAOIzh0SjpqeHpH3y3zbh\n8B5x7dtj+aB7MY5fnAGa/jTv4rTI6ptoYQe6Actrwov7ykh3z/Wzbow3ftqCXoYD\nkCVGQ3vg00DKwEO3mOSxKLoGOQ8CN31pEHUZYq7//f0+mu8I0DCm+gVu0YFJbSbS\np0auqpqgQEutxXZDBfBvTwDD\n-----END PRIVATE KEY-----\n",
+  "client_email": "flixdbproject@flixdb-project.iam.gserviceaccount.com",
+  "client_id": "108045509411459087998",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/flixdbproject%40flixdb-project.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

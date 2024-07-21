@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { User } from "./user/user.entity";
 import { ReviewModule } from "./review/review.module";
+import { UploadModule } from "./upload/upload.module";
 import { RolesGuard } from "./auth/roles.guard";
 
 @Module({
@@ -16,7 +17,7 @@ import { RolesGuard } from "./auth/roles.guard";
 		GenresModule,
 		UserModule,
 		AuthModule,
-
+		UploadModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
 		}),

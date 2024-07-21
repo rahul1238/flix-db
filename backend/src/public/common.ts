@@ -7,7 +7,7 @@ export enum Status {
   PENDING = 'pending',
 }
 
-export enum Type {
+export enum movieType {
   MOVIE = 'movie',
   SERIES = 'webseries',
   TV = 'telivision',
