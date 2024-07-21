@@ -16,8 +16,8 @@ export class GenresController {
   constructor(private readonly genreService: GenreService) {}
 
   @Get()
-  getAllgenere(): string {
-    return 'all genere fecthed successfully';
+  getAllgenere(): Promise<Genre[]> {
+    return this.genreService.getAllGenre();
   }
 
   @Post()

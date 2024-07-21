@@ -1,4 +1,4 @@
-import {Body,Controller,Get,Post,Query,Patch,Param,UseGuards,Req,UploadedFiles,UseInterceptors, HttpException,HttpStatus,} from '@nestjs/common';
+import {Body,Controller,Get,Post,Query,Patch,Param,UseGuards,Req,UploadedFiles,UseInterceptors,HttpException,HttpStatus} from '@nestjs/common';
 import { MoviesService } from './movie.service';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -9,15 +9,14 @@ import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from 'src/public/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/upload/upload.service';
-import { classToPlain } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 
 @Controller('api/movies')
 export class MoviesController {
-
-  constructor(private readonly movieService: MoviesService,
+  constructor(
+    private readonly movieService: MoviesService,
     private readonly uploadService: UploadService,
   ) {}
-
 
   @Get()
   async getAllMovies(): Promise<{ movies: Movie[]; message: string }> {
@@ -33,7 +32,6 @@ export class MoviesController {
       movies,
     };
   }
-
 
   @Get('filter')
   async filterMovies(
@@ -54,14 +52,13 @@ export class MoviesController {
     }
   }
 
-
   //add  movie
   @Post()
   @UseGuards(AuthGuard)
   @Roles(Role.PROMOTER, Role.ADMIN)
   @UseInterceptors(FilesInterceptor('image'))
   async createMovie(
-    @UploadedFiles() images:Express.Multer.File[],
+    @UploadedFiles() images: Express.Multer.File[],
     @Body() createMovieDto: CreateMovieDto,
     @Req() req,
   ): Promise<{ success: boolean; data?: Movie; message: string }> {
@@ -70,25 +67,24 @@ export class MoviesController {
         { success: false, message: 'Not authorized to create a movie' },
         HttpStatus.FORBIDDEN,
       );
-      }
-      
-      const imageUrls:string[]=[];
-      if(images.length>0){
-        images.forEach(async (image)=>{
-          const imagePath=await this.uploadService.uploadImage(image);
-          imageUrls.push(imagePath);
-        });
-      }
-      console.log(imageUrls);
-
-    createMovieDto.promoterId = req.user.sub;
+    }
 
     try {
+      const imageUrls: string[] = [];
+      if (images.length > 0) {
+        const uploadPromises = images.map(image => this.uploadService.uploadImage(image));
+        const uploadedImagePaths = await Promise.all(uploadPromises);
+        imageUrls.push(...uploadedImagePaths);
+      }
+
+      createMovieDto.promoterId = req.user.sub;
+      createMovieDto.imageUrl = imageUrls;
+
       const addedMovie = await this.movieService.createMovie(createMovieDto);
 
       return {
         success: true,
-        data: classToPlain(addedMovie) as Movie,
+        data: instanceToPlain(addedMovie) as Movie,
         message: 'Movie added successfully!',
       };
     } catch (error) {
@@ -99,7 +95,6 @@ export class MoviesController {
       };
     }
   }
-
 
   @Patch(':id')
   async updateMovie(
@@ -114,7 +109,10 @@ export class MoviesController {
     }
 
     try {
-      const movie = await this.movieService.updateMovie(movieId,updateMovieDto,);
+      const movie = await this.movieService.updateMovie(
+        movieId,
+        updateMovieDto,
+      );
       if (!movie) {
         return {
           success: false,
