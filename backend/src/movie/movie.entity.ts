@@ -47,6 +47,9 @@ export class Movie {
   @JoinColumn({ name: 'promoter_id' })
   promoter: User;
 
+  @Column({type: 'text', nullable: true})
+  director: string;
+
   @Column('simple-array', { nullable: true })
   imageUrl: string[] | null;
 

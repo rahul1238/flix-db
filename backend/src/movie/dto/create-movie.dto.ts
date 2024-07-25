@@ -36,4 +36,8 @@ export class CreateMovieDto {
 
   @IsNumber()
   promoterId: number;
+
+  @IsString()
+  @IsOptional()
+  director?: string;
 }

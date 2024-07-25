@@ -29,10 +29,12 @@ export class User {
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
-  @Exclude()
   @Column()
   @Exclude({ toPlainOnly: true })
   password: string;
+
+  @Column({ nullable: true })
+  avatar: string;
 
   @Column({ default: 'active' })
   status: string;

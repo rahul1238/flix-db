@@ -22,4 +22,7 @@ export class CreateUserDto {
 
   @IsOptional()
   role: Role;
+
+  @IsOptional()
+  avatar: string;
 }

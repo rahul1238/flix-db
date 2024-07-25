@@ -83,4 +83,20 @@ export class MoviesService {
       return null;
     }
   }
+
+  async getMovieById(movieId: number): Promise<Movie | null> {
+    try {
+      return await this.moviesRepository.findOne({where: { id: movieId },relations: ['genres', 'promoter']});
+    } catch (error) {
+      console.error('Error while fetching movie:', error);
+      return null;
+    }
+  }
+
+  async searchMovies(query: string): Promise<Movie[]> {
+    return this.moviesRepository
+      .createQueryBuilder('movie')
+      .where('movie.title ILIKE :query', { query: `%${query}%` })
+      .getMany();
+  }
 }
