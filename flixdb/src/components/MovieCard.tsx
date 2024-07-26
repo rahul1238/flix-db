@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardActionArea, CardContent, CardMedia, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { formatDate } from '../utils/formatDate';
 
 interface MovieCardProps {
   movie: {
@@ -34,7 +35,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             {movie.title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Release Date: {movie.releaseDate}
+            Release Date: {formatDate(movie.releaseDate)}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Origin: {movie.origin}

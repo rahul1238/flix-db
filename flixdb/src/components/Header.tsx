@@ -17,6 +17,10 @@ import { useAuth } from "../context/AuthContext";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import SearchIcon from '@mui/icons-material/Search';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { useThemeContext } from '../context/ThemeContext';
+import { useTheme } from '@mui/material/styles';
 import logo from '../assets/logo.png';
 
 const Header: React.FC = () => {
@@ -25,6 +29,8 @@ const Header: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const { isLoggedIn, logout } = useAuth();
+  const theme = useTheme();
+  const { toggleColorMode } = useThemeContext();
 
   const handleLoginOpen = () => setLoginOpen(true);
   const handleLoginClose = () => setLoginOpen(false);
@@ -88,15 +94,15 @@ const Header: React.FC = () => {
                 <Button color="inherit" onClick={handleLoginOpen}>
                   Login
                 </Button>
-                <Button color="inherit" onClick={handleSignupOpen}>
-                  Sign Up
-                </Button>
               </>
             )}
+            <IconButton color="inherit" onClick={toggleColorMode}>
+              {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
           </Box>
         </Toolbar>
       </Container>
-      <LoginForm open={loginOpen} onClose={handleLoginClose} />
+      <LoginForm open={loginOpen} onClose={handleLoginClose} onSignupOpen={handleSignupOpen} />
       <SignupForm
         open={signupOpen}
         onClose={handleSignupClose}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, Typography } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -7,9 +7,10 @@ import { useAuth } from "../context/AuthContext";
 interface LoginFormProps {
   open: boolean;
   onClose: () => void;
+  onSignupOpen: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
@@ -24,11 +25,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
     try {
       const response = await axios.post('http://localhost:3001/auth/login', { email: formData.email, password: formData.password });
       const { accessToken } = response.data;
-      console.log("Received token:", accessToken); // Debugging log
       localStorage.setItem('token', accessToken); // Store the token in localStorage
       login();
-      setFormData({ email: '', password: '' }); // Reset form fields
-      setError(null); // Clear error
+      setFormData({ email: '', password: '' });
+      setError(null);
       onClose();
       navigate('/');
     } catch (error) {
@@ -66,9 +66,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
         />
         {error && <Typography color="error">{error}</Typography>}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleLogin}>Login</Button>
+      <DialogActions sx={{ flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+        <Button onClick={handleLogin} variant="contained" color="primary">Login</Button>
+        <Button onClick={onClose} color="primary">Cancel</Button>
+        <Box sx={{ mt: 2 }}>
+        <Typography variant="body2" color="textSecondary">
+            Don't have an account? <span color="primary" style={{ cursor: 'pointer' }} onClick={onSignupOpen}>Sign Up</span>
+          </Typography>
+        </Box>
       </DialogActions>
     </Dialog>
   );

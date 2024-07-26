@@ -11,7 +11,7 @@ interface SignupFormProps {
 }
 
 const SignupForm: React.FC<SignupFormProps> = ({ open, onClose, onSignupSuccess }) => {
-  const [formData, setFormData] = useState({ username: '', name: '', email: '', password: '', role: 'user' });
+  const [formData, setFormData] = useState({ username: '', name: '', email: '', password: '', role: '' });
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -33,10 +33,10 @@ const SignupForm: React.FC<SignupFormProps> = ({ open, onClose, onSignupSuccess 
         password: formData.password, 
         role: formData.role 
       });
-      console.log("User signed up:", response.data); // Debugging log
+      console.log("User signed up:", response.data); 
       onSignupSuccess('User signed up successfully! Please log in.');
-      setFormData({ username: '', name: '', email: '', password: '', role: 'user' }); 
-      setError(null); // Clear error
+      setFormData({ username: '', name: '', email: '', password: '', role: '' }); 
+      setError(null);
       onClose();
       navigate('/');
     } catch (error) {

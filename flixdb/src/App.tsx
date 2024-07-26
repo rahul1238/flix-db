@@ -7,9 +7,11 @@ import Home from './components/Home';
 import MovieDetail from './components/MovieDetail';
 import Footer from './components/Footer';
 import Profile from './components/Profile';
+import { CustomThemeProvider } from './context/ThemeContext';
 
 const App: React.FC = () => {
   return (
+    <CustomThemeProvider>
     <Router>
       <div className="App">
         <Header />
@@ -24,7 +26,8 @@ const App: React.FC = () => {
         </main>
         <Footer />
       </div>
-    </Router>
+      </Router>
+      </CustomThemeProvider>
   );
 }
 

@@ -19,8 +19,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     axios.get('http://localhost:3001/api/movies')
-      .then(response => {
-        console.log(response.data);  // Debugging line
+      .then(response => { 
         const moviesData = Array.isArray(response.data.movies) ? response.data.movies : [];
         setMovies(moviesData);
       })
