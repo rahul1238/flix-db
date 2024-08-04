@@ -1,22 +1,75 @@
-// src/context/AuthContext.tsx
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, {createContext,useState,useContext,ReactNode,useEffect} from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+
+interface User {
+  id: number;
+  role: string;
+  email: string;
+  name: string;
+  username: string;
+  mobile: string;
+  [key: string]: any;
+}
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: () => void;
+  user: User | null;
+  login: (accessToken: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
 
-  const login = () => setIsLoggedIn(true);
-  const logout = () => setIsLoggedIn(false);
+  const fetchUserData = async (userId: number) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/users/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
+      setUser(response.data.user);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const login = (accessToken: string) => {
+    Cookies.set("token", accessToken, { expires: 15 });
+    const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(
+      accessToken
+    );
+    setIsLoggedIn(true);
+    fetchUserData(Number(decodedToken.sub));
+  };
+
+  const logout = () => {
+    setIsLoggedIn(false);
+    setUser(null);
+    Cookies.remove("token");
+  };
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(token);
+      setIsLoggedIn(true);
+      fetchUserData(Number(decodedToken.sub));
+    }
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -25,7 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

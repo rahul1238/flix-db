@@ -25,9 +25,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) =>
     try {
       const response = await axios.post('http://localhost:3001/auth/login', { email: formData.email, password: formData.password });
       const { accessToken } = response.data;
-      localStorage.setItem('token', accessToken); // Store the token in localStorage
-      login();
-      setFormData({ email: '', password: '' });
+      login(accessToken); 
+      setFormData({ email: '', password: '' }); 
       setError(null);
       onClose();
       navigate('/');
@@ -68,10 +67,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) =>
       </DialogContent>
       <DialogActions sx={{ flexDirection: 'column', alignItems: 'center', gap: 1 }}>
         <Button onClick={handleLogin} variant="contained" color="primary">Login</Button>
-        <Button onClick={onClose} color="primary">Cancel</Button>
+        <Button onClick={onClose} color="secondary">Cancel</Button>
         <Box sx={{ mt: 2 }}>
-        <Typography variant="body2" color="textSecondary">
-            Don't have an account? <span color="primary" style={{ cursor: 'pointer' }} onClick={onSignupOpen}>Sign Up</span>
+          <Typography variant="body2" color="textSecondary">
+            Don't have an account? <span style={{ cursor: 'pointer', color: 'blue' }} onClick={onSignupOpen}>Sign Up</span>
           </Typography>
         </Box>
       </DialogActions>

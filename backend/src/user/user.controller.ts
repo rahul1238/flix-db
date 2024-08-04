@@ -1,4 +1,4 @@
-import {Body,Controller,Get,Patch,Post,Req,UploadedFiles,UseGuards, UseInterceptors} from '@nestjs/common';
+import {Body,Controller,Get,Param,ParseIntPipe,Patch,Post,Req,UploadedFiles,UseGuards, UseInterceptors} from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { UploadService } from 'src/upload/upload.service';
@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { instanceToPlain } from 'class-transformer';
 
 @Controller('api/users')
 export class UserController {
@@ -53,5 +54,34 @@ export class UserController {
   ): Promise<User | null> {
     changePasswordDto.userId = req.user.sub;
     return await this.userService.changePassword(changePasswordDto);
+  }
+
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  async getUserById(@Param('id',ParseIntPipe) userId:number): Promise<{Success:boolean;user:User;message:string}> {
+    if(!userId){
+      return {
+        Success:false,
+        user:null,
+        message:'User ID is required',
+      };
+    }
+    try{
+      const user=await this.userService.getUserById(userId);
+      return {
+        Success:true,
+        user:instanceToPlain(user) as User,
+        message:'User fetched successfully',
+      };
+      
+    }
+    catch(error){
+      console.error('Error while fetching user:', error);
+      return {
+        Success:false,
+        user:null,
+        message:'Error while fetching user',
+      };
+    }
   }
 }

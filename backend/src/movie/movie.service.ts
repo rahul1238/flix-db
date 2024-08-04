@@ -99,4 +99,11 @@ export class MoviesService {
       .where('movie.title ILIKE :query', { query: `%${query}%` })
       .getMany();
   }
+
+  async findMoviesByPromoterId(promoterId: number): Promise<Movie[]> {
+    return this.moviesRepository.find({
+      where: { promoter: { id: promoterId } },
+      relations: ['promoter', 'genres', 'reviews'],
+    });
+  }
 }
