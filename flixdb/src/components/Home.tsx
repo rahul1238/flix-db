@@ -25,7 +25,8 @@ const Home: React.FC = () => {
         const moviesData = Array.isArray(response.data.movies) ? response.data.movies : [];
         setMovies(moviesData);
         if (moviesData.length > 0) {
-          setFeaturedMovie(moviesData[0]); 
+          const randomIndex = Math.floor(Math.random() * moviesData.length);
+          setFeaturedMovie(moviesData[randomIndex]); 
         }
       })
       .catch(error => {

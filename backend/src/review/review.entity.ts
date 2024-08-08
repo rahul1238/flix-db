@@ -11,6 +11,9 @@ export class Review {
   rating: number;
 
   @Column({ type: 'text' })
+  headline: string;
+  
+  @Column({ type: 'text' })
   feedback: string;
 
   @ManyToOne(() => Movie, (movie) => movie.reviews)
