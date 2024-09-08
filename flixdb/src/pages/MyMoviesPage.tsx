@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, Grid, Card, CardContent, CardMedia, Snackbar } from '@mui/material';
+import { Box, Button, Typography, Grid, Card, CardContent, CardMedia, Snackbar, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +16,7 @@ interface Movie {
 
 const MyMoviesPage: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { user } = useAuth();
 
@@ -23,11 +24,13 @@ const MyMoviesPage: React.FC = () => {
     const fetchMovies = async () => {
       if (!user) return;
       try {
-        const response = await axios.get(`http://localhost:3001/api/movies?promoterId=${user?.id}`);
+        const response = await axios.get(`http://localhost:3001/api/movies?promoterId=${user.id}`);
         setMovies(response.data.movies);
       } catch (error) {
-        setErrorMessage('Failed to fetch movies.');
+        setErrorMessage('Failed to fetch movies. Please try again later.');
         console.error('Error fetching movies:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,6 +40,14 @@ const MyMoviesPage: React.FC = () => {
   const handleSnackbarClose = () => {
     setErrorMessage(null);
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: 3 }}>
@@ -53,7 +64,7 @@ const MyMoviesPage: React.FC = () => {
               <CardMedia
                 component="img"
                 height="140"
-                image={movie.imageUrl[0]}
+                image={movie.imageUrl[0] || '/path/to/fallback/image.jpg'} // Fallback for missing images
                 alt={movie.title}
               />
               <CardContent>

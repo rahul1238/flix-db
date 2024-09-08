@@ -20,25 +20,28 @@ const Home: React.FC = () => {
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/movies')
-      .then(response => {
+    const fetchMovies = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/movies');
         const moviesData = Array.isArray(response.data.movies) ? response.data.movies : [];
         setMovies(moviesData);
         if (moviesData.length > 0) {
           const randomIndex = Math.floor(Math.random() * moviesData.length);
-          setFeaturedMovie(moviesData[randomIndex]); 
+          setFeaturedMovie(moviesData[randomIndex]);
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching movies:', error);
         setMovies([]);
-      });
+      }
+    };
+
+    fetchMovies();
   }, []);
 
   return (
-    <Box sx={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: '16px' }}>
+    <Box sx={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: 2 }}>
       {featuredMovie && (
-        <Card sx={{ marginBottom: '16px' }}>
+        <Card sx={{ marginBottom: 2 }}>
           <CardMedia
             component="img"
             height="500"
@@ -46,9 +49,7 @@ const Home: React.FC = () => {
             alt={featuredMovie.title}
           />
           <CardContent>
-            <Typography variant="h4" component="div">
-              {featuredMovie.title}
-            </Typography>
+            <Typography variant="h4">{featuredMovie.title}</Typography>
             <Typography variant="body2" color="text.secondary">
               {featuredMovie.description}
             </Typography>
@@ -61,7 +62,7 @@ const Home: React.FC = () => {
             Featured Today
           </Typography>
           <Grid container spacing={3}>
-            {movies.map(movie => (
+            {movies.map((movie) => (
               <Grid item key={movie.id} xs={12} sm={6} md={4}>
                 <MovieCard movie={movie} />
               </Grid>
@@ -69,15 +70,24 @@ const Home: React.FC = () => {
           </Grid>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Paper elevation={3} sx={{ padding: '16px', backgroundColor: '#2c2c2c' }}>
+          <Paper elevation={3} sx={{ padding: 2, backgroundColor: '#2c2c2c' }}>
             <Typography variant="h6" gutterBottom>
               Up Next
             </Typography>
-            {movies.slice(1, 5).map(movie => (
-              <Box key={movie.id} sx={{ display: 'flex', marginBottom: '16px' }}>
-                <img src={movie.imageUrl[0]} alt={movie.title} style={{ width: '80px', height: '120px', marginRight: '16px' }} />
+            {movies.slice(1, 5).map((movie) => (
+              <Box key={movie.id} sx={{ display: 'flex', marginBottom: 2 }}>
+                <img
+                  src={movie.imageUrl[0]}
+                  alt={movie.title}
+                  style={{ width: '80px', height: '120px', marginRight: 2 }}
+                />
                 <Box>
-                  <Typography variant="body1" component={Link} to={`/movies/${movie.id}`} sx={{ textDecoration: 'none', color: '#ffffff' }}>
+                  <Typography
+                    variant="body1"
+                    component={Link}
+                    to={`/movies/${movie.id}`}
+                    sx={{ textDecoration: 'none', color: '#ffffff' }}
+                  >
                     {movie.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">

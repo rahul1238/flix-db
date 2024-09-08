@@ -8,7 +8,12 @@ interface SearchIconButtonProps {
 
 const SearchIconButton: React.FC<SearchIconButtonProps> = ({ onSearch }) => {
   return (
-    <IconButton color="inherit" onClick={onSearch}>
+    <IconButton 
+      color="inherit" 
+      onClick={onSearch} 
+      aria-label="search" 
+      sx={{ p: 1 }} 
+    >
       <SearchIcon />
     </IconButton>
   );

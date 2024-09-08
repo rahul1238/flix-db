@@ -1,14 +1,5 @@
 import { Status, movieType } from 'src/public/common';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  ManyToMany,
-  JoinTable
-} from 'typeorm';
+import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,JoinColumn,OneToMany,ManyToMany,JoinTable} from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { Review } from 'src/review/review.entity';
 import { Genre } from 'src/genre/genre.entity';

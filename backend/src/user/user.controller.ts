@@ -1,4 +1,4 @@
-import {Body,Controller,Get,Param,ParseIntPipe,Patch,Post,Req,UploadedFiles,UseGuards, UseInterceptors} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors, HttpException, HttpStatus } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { UploadService } from 'src/upload/upload.service';
@@ -11,77 +11,84 @@ import { instanceToPlain } from 'class-transformer';
 @Controller('api/users')
 export class UserController {
   constructor(
-    private userService: UserService,
-    private uploadService: UploadService,
+    private readonly userService: UserService,
+    private readonly uploadService: UploadService,
   ) {}
 
+  // Fetch all users
   @Get()
   async getAllUsers(): Promise<{ users: User[]; message: string }> {
-    const users = await this.userService.getAllUsers();
-    if (users.length !== 0) {
-      return {
-        users,
-        message: 'All users are fetched successfully!',
-      };
+    try {
+      const users = await this.userService.getAllUsers();
+      const message = users.length
+        ? 'All users are fetched successfully!'
+        : 'No users found in the database, Please Add them';
+      return { users, message };
+    } catch (error) {
+      this.handleServiceError(error, 'fetching all users');
     }
-    return {
-      message: 'No users found in the database, Please Add them',
-      users,
-    };
   }
 
+  // Create a new user
   @Post()
   @UseInterceptors(FileInterceptor('avatar'))
-  async createUser(@UploadedFiles() avatar:Express.Multer.File, @Body() createUserDto: CreateUserDto): Promise<User> {
-    try{
-      if(avatar){
-        var avatarUrl=await this.uploadService.uploadImage(avatar);
+  async createUser(
+    @UploadedFile() avatar: Express.Multer.File,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<User> {
+    try {
+      if (avatar) {
+        const avatarUrl = await this.uploadService.uploadImage(avatar);
+        createUserDto.avatar = avatarUrl;
       }
+      return await this.userService.createUser(createUserDto);
+    } catch (error) {
+      this.handleServiceError(error, 'creating user');
     }
-    catch(error){
-      console.error('Error while uploading avatar:', error);
-      return null;
-    }
-    createUserDto.avatar=avatarUrl;
-    return this.userService.createUser(createUserDto);
   }
 
+  // Change password for a user
   @Patch('change-password')
   @UseGuards(AuthGuard)
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @Req() req,
-  ): Promise<User | null> {
-    changePasswordDto.userId = req.user.sub;
-    return await this.userService.changePassword(changePasswordDto);
+  ): Promise<User> {
+    try {
+      changePasswordDto.userId = req.user.sub;
+      return await this.userService.changePassword(changePasswordDto);
+    } catch (error) {
+      this.handleServiceError(error, 'changing password');
+    }
   }
 
+  // Fetch a single user by ID
   @Get(':id')
   @UseGuards(AuthGuard)
-  async getUserById(@Param('id',ParseIntPipe) userId:number): Promise<{Success:boolean;user:User;message:string}> {
-    if(!userId){
+  async getUserById(
+    @Param('id', ParseIntPipe) userId: number,
+  ): Promise<{ success: boolean; user?: User; message: string }> {
+    try {
+      const user = await this.userService.getUserById(userId);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
       return {
-        Success:false,
-        user:null,
-        message:'User ID is required',
+        success: true,
+        user: instanceToPlain(user) as User,
+        message: 'User fetched successfully',
       };
+    } catch (error) {
+      this.handleServiceError(error, 'fetching user by ID');
     }
-    try{
-      const user=await this.userService.getUserById(userId);
-      return {
-        Success:true,
-        user:instanceToPlain(user) as User,
-        message:'User fetched successfully',
-      };
-      
-    }
-    catch(error){
-      console.error('Error while fetching user:', error);
-      return {
-        Success:false,
-        user:null,
-        message:'Error while fetching user',
-      };
-    }
+  }
+
+  // Handle service errors uniformly
+  private handleServiceError(error: any, operation: string): never {
+    console.error(`Error while ${operation}:`, error);
+    throw new HttpException(
+      `An error occurred while ${operation}. Please try again later.`,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 }

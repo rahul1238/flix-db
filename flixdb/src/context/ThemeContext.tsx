@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState, useContext,ReactNode } from 'react';
+import React, { createContext, useMemo, useState, useContext, ReactNode } from 'react';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { PaletteMode } from '@mui/material';
 
@@ -11,14 +11,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const useThemeContext = () => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useThemeContext must be used within a ThemeProvider');
+    throw new Error('useThemeContext must be used within a CustomThemeProvider');
   }
   return context;
 };
 
 interface CustomThemeProviderProps {
-    children: ReactNode;
-  }
+  children: ReactNode;
+}
 
 export const CustomThemeProvider: React.FC<CustomThemeProviderProps> = ({ children }) => {
   const [mode, setMode] = useState<PaletteMode>('light');

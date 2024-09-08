@@ -1,7 +1,7 @@
-import React, {createContext,useState,useContext,ReactNode,useEffect} from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+const jwtDecode = require('jwt-decode');
 
 interface User {
   id: number;
@@ -9,7 +9,7 @@ interface User {
   email: string;
   name: string;
   username: string;
-  mobile: string;
+  phone: string;
   [key: string]: any;
 }
 
@@ -22,49 +22,60 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
   const fetchUserData = async (userId: number) => {
     try {
-      const response = await axios.get(
-        `http://localhost:3001/api/users/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-          },
-        }
-      );
+      const response = await axios.get(`http://localhost:3001/api/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      });
       setUser(response.data.user);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error('Error fetching user data:', error);
     }
   };
 
   const login = (accessToken: string) => {
-    Cookies.set("token", accessToken, { expires: 15 });
-    const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(
-      accessToken
-    );
-    setIsLoggedIn(true);
-    fetchUserData(Number(decodedToken.sub));
+    try {
+      Cookies.set('token', accessToken, { expires: 15 });
+      const decodedToken: { sub: string } = jwtDecode(accessToken);
+      setIsLoggedIn(true);
+      if (decodedToken.sub) {
+        fetchUserData(Number(decodedToken.sub));
+      } else {
+        throw new Error('Invalid token structure');
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      logout();
+    }
   };
 
   const logout = () => {
     setIsLoggedIn(false);
     setUser(null);
-    Cookies.remove("token");
+    Cookies.remove('token');
   };
 
   useEffect(() => {
-    const token = Cookies.get("token");
+    const token = Cookies.get('token');
     if (token) {
-      const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(token);
-      setIsLoggedIn(true);
-      fetchUserData(Number(decodedToken.sub));
+      try {
+        const decodedToken: { sub: string } = jwtDecode(token);
+        setIsLoggedIn(true);
+        if (decodedToken.sub) {
+          fetchUserData(Number(decodedToken.sub));
+        } else {
+          throw new Error('Invalid token structure');
+        }
+      } catch (error) {
+        console.error('Error decoding token during initialization:', error);
+        logout();
+      }
     }
   }, []);
 
@@ -78,7 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

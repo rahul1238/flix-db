@@ -1,11 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Typography, Box, Select, MenuItem, FormControl, InputLabel, Checkbox, ListItemText, OutlinedInput, SelectChangeEvent } from '@mui/material';
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
+  SelectChangeEvent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Snackbar,
+  CircularProgress,
+} from '@mui/material';
 import axios from 'axios';
-import Cookies from "js-cookie";
+import Cookies from 'js-cookie';
 
 interface Genre {
   id: number;
   name: string;
+  description: string;
 }
 
 const UploadMoviePage: React.FC = () => {
@@ -19,6 +40,11 @@ const UploadMoviePage: React.FC = () => {
   const [director, setDirector] = useState('');
   const [images, setImages] = useState<FileList | null>(null);
   const [genres, setGenres] = useState<Genre[]>([]);
+  const [newGenreName, setNewGenreName] = useState('');
+  const [newGenreDescription, setNewGenreDescription] = useState('');
+  const [isCreatingGenre, setIsCreatingGenre] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -39,12 +65,42 @@ const UploadMoviePage: React.FC = () => {
     }
   };
 
-  const handleGenreChange = (event: SelectChangeEvent<number[]>) => {
-    setGenreIds(event.target.value as number[]);
+  const handleGenreChange = (event: SelectChangeEvent<(number | string)[]>) => {
+    const { value } = event.target;
+    if (value.includes('create-new')) {
+      setIsCreatingGenre(true);
+      return;
+    }
+    setGenreIds(value as number[]);
+  };
+
+  const handleCreateGenre = async () => {
+    if (!newGenreName || !newGenreDescription) {
+      setFeedbackMessage('Please fill out all fields to create a new genre.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3001/api/genres', {
+        name: newGenreName,
+        description: newGenreDescription,
+      });
+      const newGenre = response.data;
+      setGenres([...genres, newGenre]);
+      setGenreIds((prev) => [...prev, newGenre.id]);
+      setIsCreatingGenre(false);
+      setNewGenreName('');
+      setNewGenreDescription('');
+      setFeedbackMessage('Genre created successfully!');
+    } catch (error) {
+      console.error('Error creating genre:', error);
+      setFeedbackMessage('Failed to create genre.');
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setIsLoading(true);
 
     const formData = new FormData();
     formData.append('title', title);
@@ -65,14 +121,21 @@ const UploadMoviePage: React.FC = () => {
       const response = await axios.post('http://localhost:3001/api/movies', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get('token')}`,
         },
       });
-      
+      setFeedbackMessage('Movie uploaded successfully!');
       console.log('Movie uploaded successfully:', response.data);
     } catch (error) {
       console.error('Error uploading movie:', error);
+      setFeedbackMessage('Failed to upload movie.');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setFeedbackMessage(null);
   };
 
   return (
@@ -149,14 +212,21 @@ const UploadMoviePage: React.FC = () => {
             value={genreIds}
             onChange={handleGenreChange}
             input={<OutlinedInput label="Genres" />}
-            renderValue={(selected) => (selected as number[]).map(id => genres.find(genre => genre.id === id)?.name).join(', ')}
+            renderValue={(selected) =>
+              (selected as number[]).map((id) => genres.find((genre) => genre.id === id)?.name).join(', ')
+            }
           >
             {genres.map((genre) => (
               <MenuItem key={genre.id} value={genre.id}>
-                <Checkbox checked={genreIds.indexOf(genre.id) > -1} />
+                <Checkbox checked={genreIds.includes(genre.id)} />
                 <ListItemText primary={genre.name} />
               </MenuItem>
             ))}
+            <MenuItem value="create-new">
+              <Button variant="contained" color="primary" onClick={() => setIsCreatingGenre(true)}>
+                Create New Genre
+              </Button>
+            </MenuItem>
           </Select>
         </FormControl>
         <Box mt={2}>
@@ -175,11 +245,46 @@ const UploadMoviePage: React.FC = () => {
           </label>
         </Box>
         <Box mt={2}>
-          <Button variant="contained" color="primary" type="submit">
-            Submit
+          <Button variant="contained" color="primary" type="submit" disabled={isLoading}>
+            {isLoading ? <CircularProgress size={24} /> : 'Submit'}
           </Button>
         </Box>
       </form>
+
+      <Dialog open={isCreatingGenre} onClose={() => setIsCreatingGenre(false)}>
+        <DialogTitle>Create New Genre</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Genre Name"
+            value={newGenreName}
+            onChange={(e) => setNewGenreName(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+          />
+          <TextField
+            label="Genre Description"
+            value={newGenreDescription}
+            onChange={(e) => setNewGenreDescription(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsCreatingGenre(false)}>Cancel</Button>
+          <Button onClick={handleCreateGenre} variant="contained" color="primary">
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={!!feedbackMessage}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={feedbackMessage}
+      />
     </Container>
   );
 };

@@ -11,16 +11,19 @@ interface GenrePopupProps {
 }
 
 const GenrePopup: React.FC<GenrePopupProps> = ({ open, onClose, genre }) => {
+  // Avoid rendering the dialog if genre is null
   if (!genre) return null;
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{genre.name}</DialogTitle>
+    <Dialog open={open} onClose={onClose} aria-labelledby="genre-dialog-title">
+      <DialogTitle id="genre-dialog-title">{genre.name}</DialogTitle>
       <DialogContent>
         <Typography>{genre.description}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose} variant="contained" color="primary">
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );

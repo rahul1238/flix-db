@@ -1,14 +1,7 @@
 import { Movie } from 'src/movie/movie.entity';
 import { Role } from 'src/public/common';
 import { Review } from 'src/review/review.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  BeforeInsert,
-  BeforeUpdate,
-} from 'typeorm';
+import {Entity,Column,PrimaryGeneratedColumn,OneToMany,BeforeInsert,BeforeUpdate,} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 
@@ -32,6 +25,9 @@ export class User {
   @Column()
   @Exclude({ toPlainOnly: true })
   password: string;
+
+  @Column({nullable:false})
+  phone:string;
 
   @Column({ nullable: true })
   avatar: string;

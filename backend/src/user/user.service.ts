@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -11,84 +11,110 @@ import { instanceToPlain } from 'class-transformer';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  //getAllUsers method
+  // Fetch all users
   async getAllUsers(): Promise<User[]> {
-    return await this.userRepository.find();
+    try {
+      return await this.userRepository.find();
+    } catch (error) {
+      this.handleDatabaseError(error, 'fetching all users');
+    }
   }
 
-  //create
+  // Create a new user
   async createUser(userDto: CreateUserDto): Promise<User> {
     const { email, username } = userDto;
-    const existingUser = await this.userRepository.findOne({
-      where: [{ username }, { email }],
-    });
 
-    if (existingUser) {
-      if (existingUser.email === email) {
-        throw new BadRequestException('Email already exists');
+    try {
+      const existingUser = await this.userRepository.findOne({
+        where: [{ username }, { email }],
+      });
+
+      if (existingUser) {
+        if (existingUser.email === email) {
+          throw new BadRequestException('Email already exists');
+        }
+        if (existingUser.username === username) {
+          throw new BadRequestException('Username already exists');
+        }
       }
-      if (existingUser.username === username) {
-        throw new BadRequestException('Username already exists');
-      }
+
+      const user = this.userRepository.create(userDto);
+      await this.userRepository.save(user);
+      return instanceToPlain(user) as User;
+    } catch (error) {
+      this.handleDatabaseError(error, 'creating user');
     }
-
-    const user = this.userRepository.create(userDto);
-    await this.userRepository.save(user);
-    return instanceToPlain(user) as User;
   }
 
-  //find user by email
+  // Find user by email
   async findOne(email: string): Promise<User | null> {
     try {
-      const user = await this.userRepository.findOne({ where: { email } });
+      return await this.userRepository.findOne({ where: { email } });
+    } catch (error) {
+      this.handleDatabaseError(error, 'finding user by email');
+    }
+  }
+
+  // Change user's password
+  async changePassword(changePasswordDto: ChangePasswordDto): Promise<User> {
+    const { userId, oldPassword, newPassword } = changePasswordDto;
+
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
-        console.error('No User found with this email:', email);
-        return null;
+        throw new BadRequestException('User not found');
+      }
+
+      const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      if (!isOldPasswordValid) {
+        throw new BadRequestException('Old password is incorrect');
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
+      await this.userRepository.save(user);
+
+      return user;
+    } catch (error) {
+      this.handleDatabaseError(error, 'changing password');
+    }
+  }
+
+  // Validate user's password
+  async validateUserPassword(email: string, password: string): Promise<User | null> {
+    try {
+      const user = await this.userRepository.findOne({ where: { email } });
+      if (user && (await bcrypt.compare(password, user.password))) {
+        return user;
+      }
+      return null;
+    } catch (error) {
+      this.handleDatabaseError(error, 'validating user password');
+    }
+  }
+
+  // Fetch a single user by ID
+  async getUserById(id: number): Promise<User> {
+    try {
+      const user = await this.userRepository.findOne({ where: { id } });
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
       return user;
     } catch (error) {
-      console.error('Error while finding user:', error);
-      return null;
+      this.handleDatabaseError(error, 'fetching user by ID');
     }
   }
 
-  //change password
-  async changePassword(
-    changePasswordDto: ChangePasswordDto,
-  ): Promise<User | null> {
-    const { userId, oldPassword, newPassword } = changePasswordDto;
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      return null;
-    }
-    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
-    if (!isOldPasswordValid) {
-      throw new BadRequestException('Old password is incorrect');
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
-    await this.userRepository.save(user);
-
-    return user;
-  }
-
-  //validate user password
-  async validateUserPassword(
-    email: string,
-    password: string,
-  ): Promise<User | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
-    }
-    return null;
-  }
-
-  async getUserById(id: number): Promise<User> {
-    return await this.userRepository.findOne({ where: { id } });
+  // Handle database errors uniformly
+  private handleDatabaseError(error: any, operation: string): never {
+    console.error(`Error while ${operation}:`, error);
+    throw new HttpException(
+      `An error occurred while ${operation}. Please try again later.`,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 }

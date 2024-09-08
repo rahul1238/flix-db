@@ -21,13 +21,14 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   };
 
   return (
-    <Card sx={{ maxWidth: 345, m: 2 }}>
+    <Card sx={{ maxWidth: 345, margin: 2 }}>
       <CardActionArea onClick={handleCardClick}>
         <CardMedia
           component="img"
           height="140"
-          image={movie.imageUrl[0]} 
+          image={movie.imageUrl[0]}
           alt={movie.title}
+          loading="lazy" // Optimize image loading
           sx={{ objectFit: 'cover' }}
         />
         <CardContent>

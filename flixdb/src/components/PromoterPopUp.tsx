@@ -19,15 +19,17 @@ const PromoterPopup: React.FC<PromoterPopupProps> = ({ open, onClose, promoter }
   if (!promoter) return null;
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{promoter.name}</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} aria-labelledby="promoter-dialog-title">
+      <DialogTitle id="promoter-dialog-title">{promoter.name}</DialogTitle>
+      <DialogContent dividers>
         <Typography variant="body1">Username: {promoter.username}</Typography>
         <Typography variant="body1">Email: {promoter.email}</Typography>
         <Typography variant="body1">Role: {promoter.role}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose} variant="contained" color="primary" sx={{ mt: 1 }}>
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );

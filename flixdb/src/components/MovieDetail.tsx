@@ -1,18 +1,10 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import {
-  Typography,
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  CircularProgress,
-} from "@mui/material";
-import { useParams } from "react-router-dom";
-import GenrePopup from "./GenrePopUp";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Typography, Box, Grid, Card, CardContent, CardMedia, CircularProgress } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import GenrePopup from './GenrePopUp';
 import PromoterPopup from './PromoterPopUp';
-import { formatDate } from "../utils/formatDate";
+import { formatDate } from '../utils/formatDate';
 
 interface Genre {
   id: number;
@@ -58,44 +50,36 @@ const MovieDetail: React.FC = () => {
   const [selectedPromoter, setSelectedPromoter] = useState<Promoter | null>(null);
 
   useEffect(() => {
-    axios
-      .get<{ success: boolean; data: Movie; message: string }>(
-        `http://localhost:3001/api/movies/${id}`
-      )
-      .then((response) => {
+    const fetchMovieDetails = async () => {
+      try {
+        const response = await axios.get<{ success: boolean; data: Movie; message: string }>(
+          `http://localhost:3001/api/movies/${id}`
+        );
         setMovie(response.data.data);
+      } catch (error) {
+        console.error('Error fetching movie details:', error);
+        setMovie(null);
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching movie details:", error);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchMovieDetails();
   }, [id]);
 
-  const handleGenreClick = (genre: Genre) => {
-    setSelectedGenre(genre);
-  };
-
-  const handleGenrePopupClose = () => {
-    setSelectedGenre(null);
-  };
-
-  const handlePromoterClick = (promoter: Promoter) => {
-    setSelectedPromoter(promoter);
-  };
-
-  const handlePromoterPopupClose = () => {
-    setSelectedPromoter(null);
-  };
+  const handleGenreClick = (genre: Genre) => setSelectedGenre(genre);
+  const handleGenrePopupClose = () => setSelectedGenre(null);
+  const handlePromoterClick = (promoter: Promoter) => setSelectedPromoter(promoter);
+  const handlePromoterPopupClose = () => setSelectedPromoter(null);
 
   if (loading) {
     return (
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
         }}
       >
         <CircularProgress />
@@ -113,24 +97,13 @@ const MovieDetail: React.FC = () => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Box
-        sx={{
-          padding: '4px 12px',
-          borderRadius: '12px',
-          border: '1px solid #ccc',
-          display: 'inline-block',
-          mb: 2,
-          alignSelf: 'center',
-        }}
-      >
-        <Typography align="center" variant="h4" component="div" color="textPrimary">
-          {movie.title}
-        </Typography>
-      </Box>
+      <Typography align="center" variant="h4" component="div" color="textPrimary" sx={{ mb: 2 }}>
+        {movie.title}
+      </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            {movie.imageUrl &&
+            {movie.imageUrl && movie.imageUrl.length > 0 ? (
               movie.imageUrl.map((url, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Card>
@@ -138,11 +111,17 @@ const MovieDetail: React.FC = () => {
                       component="img"
                       image={url}
                       alt={`Movie image ${index + 1}`}
-                      sx={{ height: "100%", objectFit: "cover" }}
+                      loading="lazy"
+                      sx={{ height: '100%', objectFit: 'cover' }}
                     />
                   </Card>
                 </Grid>
-              ))}
+              ))
+            ) : (
+              <Typography variant="body1" align="center">
+                No images available.
+              </Typography>
+            )}
           </Grid>
         </Grid>
         <Grid item xs={12}>
@@ -154,40 +133,41 @@ const MovieDetail: React.FC = () => {
               </Typography>
               <Typography variant="h6">Release Date</Typography>
               <Typography variant="body2" color="textSecondary">
-                {" "}
                 {formatDate(movie.releaseDate)}
               </Typography>
               <Typography variant="h6">Origin</Typography>
               <Typography variant="body2" color="textSecondary">
-                {" "}
                 {movie.origin}
               </Typography>
               <Typography variant="h6">Type</Typography>
               <Typography variant="body2" color="textSecondary">
-                {movie.type === "movie" ? "Movie" : movie.type}
+                {movie.type === 'movie' ? 'Movie' : movie.type}
               </Typography>
               <Typography variant="h6">Promoter</Typography>
               <Typography variant="body2" color="textSecondary">
-                 <span style={{ textDecoration: 'none', color: 'blue', cursor: 'pointer' }} onClick={() => handlePromoterClick(movie.promoter)}>
+                <span
+                  style={{ textDecoration: 'none', color: 'blue', cursor: 'pointer' }}
+                  onClick={() => handlePromoterClick(movie.promoter)}
+                >
                   {movie.promoter.name}
                 </span>
               </Typography>
               <Typography variant="h6" gutterBottom>
                 Genres
               </Typography>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-                {movie.genres &&
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                {movie.genres && movie.genres.length > 0 ? (
                   movie.genres.map((genre) => (
                     <Box
                       key={genre.id}
                       sx={{
-                        padding: "4px 12px",
-                        borderRadius: "16px",
-                        border: "1px solid #ccc",
-                        cursor: "pointer",
-                        display: "inline-block",
-                        "&:hover": {
-                          backgroundColor: "#f0f0f0",
+                        padding: '4px 12px',
+                        borderRadius: '16px',
+                        border: '1px solid #ccc',
+                        cursor: 'pointer',
+                        display: 'inline-block',
+                        '&:hover': {
+                          backgroundColor: '#f0f0f0',
                         },
                       }}
                       onClick={() => handleGenreClick(genre)}
@@ -196,7 +176,12 @@ const MovieDetail: React.FC = () => {
                         {genre.name}
                       </Typography>
                     </Box>
-                  ))}
+                  ))
+                ) : (
+                  <Typography variant="body2" color="textSecondary">
+                    No genres available.
+                  </Typography>
+                )}
               </Box>
             </CardContent>
           </Card>
@@ -206,8 +191,8 @@ const MovieDetail: React.FC = () => {
         <Typography variant="h6" gutterBottom>
           Reviews
         </Typography>
-        {movie.reviews &&
-          movie.reviews.map((review: Review) => (
+        {movie.reviews && movie.reviews.length > 0 ? (
+          movie.reviews.map((review) => (
             <Card key={review.id} sx={{ mb: 2 }}>
               <CardContent>
                 <Typography variant="body2" color="textSecondary">
@@ -216,18 +201,15 @@ const MovieDetail: React.FC = () => {
                 <Typography variant="body1">{review.feedback}</Typography>
               </CardContent>
             </Card>
-          ))}
+          ))
+        ) : (
+          <Typography variant="body2" color="textSecondary">
+            No reviews available.
+          </Typography>
+        )}
       </Box>
-      <GenrePopup
-        open={!!selectedGenre}
-        onClose={handleGenrePopupClose}
-        genre={selectedGenre}
-      />
-      <PromoterPopup
-        open={!!selectedPromoter}
-        onClose={handlePromoterPopupClose}
-        promoter={selectedPromoter}
-      />
+      <GenrePopup open={!!selectedGenre} onClose={handleGenrePopupClose} genre={selectedGenre} />
+      <PromoterPopup open={!!selectedPromoter} onClose={handlePromoterPopupClose} promoter={selectedPromoter} />
     </Box>
   );
 };
