@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-const jwtDecode = require('jwt-decode');
+import { jwtDecode } from "jwt-decode"; 
 
 interface User {
   id: number;
@@ -9,8 +9,7 @@ interface User {
   email: string;
   name: string;
   username: string;
-  phone: string;
-  [key: string]: any;
+  mobile: string;
 }
 
 interface AuthContextType {
@@ -36,15 +35,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(response.data.user);
     } catch (error) {
       console.error('Error fetching user data:', error);
+      logout();
     }
   };
 
   const login = (accessToken: string) => {
     try {
       Cookies.set('token', accessToken, { expires: 15 });
-      const decodedToken: { sub: string } = jwtDecode(accessToken);
-      setIsLoggedIn(true);
+      const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(accessToken); 
       if (decodedToken.sub) {
+        setIsLoggedIn(true);
         fetchUserData(Number(decodedToken.sub));
       } else {
         throw new Error('Invalid token structure');
@@ -65,12 +65,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const token = Cookies.get('token');
     if (token) {
       try {
-        const decodedToken: { sub: string } = jwtDecode(token);
-        setIsLoggedIn(true);
+        const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(token); 
         if (decodedToken.sub) {
+          setIsLoggedIn(true);
           fetchUserData(Number(decodedToken.sub));
         } else {
-          throw new Error('Invalid token structure');
+          throw new Error('Invalid token structure during initialization');
         }
       } catch (error) {
         console.error('Error decoding token during initialization:', error);

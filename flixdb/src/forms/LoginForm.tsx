@@ -38,7 +38,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) =>
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://localhost:3001/auth/login', formData);
-      const { accessToken } = response.data;
+      const accessToken:string = response.data.data.accessToken;
       login(accessToken);
       setFormData({ email: '', password: '' });
       setError(null);

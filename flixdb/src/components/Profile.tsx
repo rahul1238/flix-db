@@ -24,7 +24,7 @@ const Profile: React.FC = () => {
         <Typography variant="h4">{user.name || user.username}</Typography>
       </Box>
       <Typography variant="h6">Username: {user.username}</Typography>
-      {user.phone && <Typography variant="h6">Mobile: {user.phone}</Typography>}
+      {user.mobile && <Typography variant="h6">Mobile: {user.mobile}</Typography>}
       <Typography variant="h6">Email: {user.email}</Typography>
       <Typography variant="h6">Role: {user.role}</Typography>
     </Container>
