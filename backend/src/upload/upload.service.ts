@@ -1,34 +1,30 @@
-import { Injectable } from "@nestjs/common";
-import { Storage } from "@google-cloud/storage";
-import * as  path from "path";
+import { Injectable } from '@nestjs/common';
+import { CloudinaryConfigService } from './cloudinary.config';
+import { UploadApiResponse, UploadApiErrorResponse } from 'cloudinary';
+import * as streamifier from 'streamifier';
 
 @Injectable()
-export class UploadService{
-    private storage:Storage;
-    private bucketName:string="flixdb-51";
+export class UploadService {
+  constructor(
+    private readonly cloudinaryConfigService: CloudinaryConfigService,
+  ) {}
 
-    constructor(){
-        this.storage=new Storage({
-            keyFilename:path.join(__dirname,"../../gcp/flixdb-project-1832730228a8.json"),
-            projectId:"flixdb-project"
-        })
-    }
+  async uploadImage(file: Express.Multer.File): Promise<string> {
+    const cloudinary = this.cloudinaryConfigService.getCloudinary();
 
-    async uploadImage(file:Express.Multer.File):Promise<string>{
-        const bucket=this.storage.bucket(this.bucketName);
-        const blob=bucket.file(file.originalname);
-        const blobStream=blob.createWriteStream({
-            resumable:false
-        });
-        return new Promise((resolve,reject)=>{
-            blobStream.on("finish",()=>{
-                const publicUrl=`https://storage.googleapis.com/${this.bucketName}/${blob.name}`;
-                resolve(publicUrl);
-            })
-            .on("error",(err)=>{
-                reject(err);
-            })
-            .end(file.buffer);
-        });
-    }
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: 'flixdb' },
+        (error: UploadApiErrorResponse, result: UploadApiResponse) => {
+          if (result) {
+            resolve(result.secure_url);
+          } else {
+            reject(error);
+          }
+        },
+      );
+
+      streamifier.createReadStream(file.buffer).pipe(uploadStream);
+    });
+  }
 }
