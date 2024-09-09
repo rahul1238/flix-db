@@ -1,7 +1,9 @@
-import { Body, Controller, Post, Request, UseGuards, Get, HttpException, HttpStatus } from '@nestjs/common';
+import {Body,Controller,Post,Request,UseGuards,Get,HttpException,HttpStatus,Query} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-user.dto';
 import { AuthGuard } from './auth.guard';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -9,7 +11,9 @@ export class AuthController {
 
   // Handle user login
   @Post('login')
-  async login(@Body() loginDto: LoginDto): Promise<{ success: boolean; data?: any; message: string }> {
+  async login(
+    @Body() loginDto: LoginDto,
+  ): Promise<{ success: boolean; data?: any; message: string }> {
     try {
       const result = await this.authService.login(loginDto);
       return {
@@ -25,7 +29,11 @@ export class AuthController {
   // Get the profile of the authenticated user
   @UseGuards(AuthGuard)
   @Get('profile')
-  getProfile(@Request() req): { success: boolean; data?: any; message: string } {
+  getProfile(@Request() req): {
+    success: boolean;
+    data?: any;
+    message: string;
+  } {
     try {
       return {
         success: true,
@@ -37,11 +45,49 @@ export class AuthController {
     }
   }
 
+  // Handle forgot password requests
+  @Post('forgot-password')
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      await this.authService.forgotPassword(forgotPasswordDto.email);
+      return {
+        success: true,
+        message: 'Password reset link sent to your email',
+      };
+    } catch (error) {
+      this.handleControllerError(error, 'processing forgot password');
+    }
+  }
+
+  // Handle password reset requests
+  @Post('reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      await this.authService.resetPassword(
+        resetPasswordDto.token,
+        resetPasswordDto.newPassword,
+      );
+      return {
+        success: true,
+        message: 'Password reset successfully',
+      };
+    } catch (error) {
+      this.handleControllerError(error, 'resetting password');
+    }
+  }
+
   // Handle controller-level errors uniformly
   private handleControllerError(error: any, operation: string): never {
     console.error(`Error while ${operation}:`, error);
     throw new HttpException(
-      { success: false, message: `An error occurred while ${operation}. Please try again later.` },
+      {
+        success: false,
+        message: `An error occurred while ${operation}. Please try again later.`,
+      },
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }

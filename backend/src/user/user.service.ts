@@ -1,11 +1,12 @@
 import { BadRequestException, Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository } from 'typeorm';
+import { Repository, MoreThan } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcrypt';
 import { instanceToPlain } from 'class-transformer';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -50,11 +51,54 @@ export class UserService {
   }
 
   // Find user by email
-  async findOne(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<User | null> {
     try {
       return await this.userRepository.findOne({ where: { email } });
     } catch (error) {
       this.handleDatabaseError(error, 'finding user by email');
+    }
+  }
+
+  // Generate reset token for the user
+  async generateResetToken(id: number): Promise<string | null> {
+    const user = await this.getUserById(id);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    user.resetToken = uuidv4(); 
+    user.resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); 
+    await this.userRepository.save(user);
+    
+    return user.resetToken;
+  }
+
+  // Reset password using the reset token
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { resetToken: token, resetTokenExpiry: MoreThan(new Date()) },
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    user.resetToken = null; 
+    user.resetTokenExpiry = null; 
+    await this.userRepository.save(user);
+  }
+
+  // Validate user's password
+  async validateUserPassword(email: string, password: string): Promise<User | null> {
+    try {
+      const user = await this.userRepository.findOne({ where: { email } });
+      if (user && (await bcrypt.compare(password, user.password))) {
+        return user;
+      }
+      return null;
+    } catch (error) {
+      this.handleDatabaseError(error, 'validating user password');
     }
   }
 
@@ -80,19 +124,6 @@ export class UserService {
       return user;
     } catch (error) {
       this.handleDatabaseError(error, 'changing password');
-    }
-  }
-
-  // Validate user's password
-  async validateUserPassword(email: string, password: string): Promise<User | null> {
-    try {
-      const user = await this.userRepository.findOne({ where: { email } });
-      if (user && (await bcrypt.compare(password, user.password))) {
-        return user;
-      }
-      return null;
-    } catch (error) {
-      this.handleDatabaseError(error, 'validating user password');
     }
   }
 

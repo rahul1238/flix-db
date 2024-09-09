@@ -7,6 +7,7 @@ import MovieDetail from './components/MovieDetail';
 import Footer from './components/Footer';
 import Profile from './components/Profile';
 import UploadMoviePage from './forms/UploadMovie';
+import ResetPassword from './forms/ResetPassword';
 import MyMoviesPage from './pages/MyMoviesPage';
 import { CustomThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
@@ -26,6 +27,7 @@ const App: React.FC = () => {
                   <Route path="/movies/:id" element={<MovieDetail />} />
                   <Route path="/upload" element={<UploadMoviePage />} />
                   <Route path="/mymovies" element={<MyMoviesPage />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                 </Routes>
               </Container>
             </Box>
