@@ -17,6 +17,7 @@ export class UserController {
 
   // Fetch all users
   @Get()
+  @UseGuards(AuthGuard)
   async getAllUsers(): Promise<{ users: User[]; message: string }> {
     try {
       const users = await this.userService.getAllUsers();

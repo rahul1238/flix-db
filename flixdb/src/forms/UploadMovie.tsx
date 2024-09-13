@@ -1,25 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Checkbox,
-  ListItemText,
-  OutlinedInput,
-  SelectChangeEvent,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Snackbar,
-  CircularProgress,
-} from '@mui/material';
+import {Container,TextField,Button,Typography,Box,Select,MenuItem,FormControl,InputLabel,Checkbox,ListItemText,OutlinedInput,SelectChangeEvent,Dialog,DialogTitle,DialogContent,DialogActions,Snackbar,CircularProgress,} from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
@@ -50,9 +30,15 @@ const UploadMoviePage: React.FC = () => {
     const fetchGenres = async () => {
       try {
         const response = await axios.get('http://localhost:3001/api/genres');
-        setGenres(response.data);
+        if (response.data && response.data.success && Array.isArray(response.data.data)) {
+          setGenres(response.data.data);
+        } else {
+          console.error('Unexpected response format:', response.data);
+          setGenres([]); 
+        }
       } catch (error) {
         console.error('Error fetching genres:', error);
+        setGenres([]); 
       }
     };
 

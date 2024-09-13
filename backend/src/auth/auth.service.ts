@@ -4,6 +4,8 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { Role } from 'src/public/common';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,14 +20,42 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
     const { email, password } = loginDto;
 
-    // Validate user credentials
     const user = await this.userService.validateUserPassword(email, password);
     if (!user) {
       this.handleUnauthorized('Invalid credentials');
     }
 
-    // Generate JWT token with user payload
     const payload = { email: user.email, sub: user.id, role: user.role };
+    const accessToken = this.jwtService.sign(payload);
+    return { accessToken };
+  }
+
+  // Google login handler
+  async googleLogin(user): Promise<{ accessToken: string }> {
+    if (!user) {
+      throw new UnauthorizedException('Google authentication failed');
+    }
+
+    let existingUser = await this.userService.findUserByEmail(user.email);
+
+    // If user doesn't exist, create a new one
+    if (!existingUser) {
+      const newUser: CreateUserDto = {
+        email: user.email,
+        username: user.email.split('@')[0],
+        name: user.name,
+        password: '',
+        role: Role.USER,
+        phone: '',
+        status: 'active',
+        avatar: user.picture || '',
+      };
+
+      existingUser = await this.userService.createUser(newUser);
+    }
+
+    // Generate JWT token with user payload
+    const payload = { email: existingUser.email, sub: existingUser.id, role: existingUser.role };
     const accessToken = this.jwtService.sign(payload);
 
     return { accessToken };

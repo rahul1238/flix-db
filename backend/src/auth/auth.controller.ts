@@ -1,9 +1,10 @@
-import {Body,Controller,Post,Request,UseGuards,Get,HttpException,HttpStatus,Query} from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards, Get, HttpException, HttpStatus, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-user.dto';
 import { AuthGuard } from './auth.guard';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { SetMetadata } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -77,6 +78,31 @@ export class AuthController {
       };
     } catch (error) {
       this.handleControllerError(error, 'resetting password');
+    }
+  }
+
+  // Initiate Google OAuth process
+  @Get('google')
+  @UseGuards(AuthGuard)
+  @SetMetadata('authType', 'google')  // Set metadata to specify Google OAuth
+  async googleAuth() {
+    // This method initiates the Google OAuth process
+  }
+
+  // Handle Google OAuth redirect and process user information
+  @Get('google/redirect')
+  @UseGuards(AuthGuard)
+  @SetMetadata('authType', 'google')  // Set metadata to specify Google OAuth
+  async googleAuthRedirect(@Req() req) {
+    try {
+      const user = await this.authService.googleLogin(req.user);
+      return {
+        success: true,
+        data: user,
+        message: 'Google login successful',
+      };
+    } catch (error) {
+      this.handleControllerError(error, 'Google authentication');
     }
   }
 

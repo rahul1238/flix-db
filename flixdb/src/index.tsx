@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const theme = createTheme({
   typography: {
@@ -16,12 +17,16 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
+
 root.render(
   <React.StrictMode>
     <AuthProvider>
-    <ThemeProvider theme={theme}>
-      <App />
-      </ThemeProvider>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </GoogleOAuthProvider>
     </AuthProvider>
   </React.StrictMode>
 );

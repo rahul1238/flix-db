@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { jwtDecode } from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode";
 
 interface User {
   id: number;
@@ -41,8 +41,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = (accessToken: string) => {
     try {
-      Cookies.set('token', accessToken, { expires: 15 });
-      const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(accessToken); 
+      Cookies.set('token', accessToken, { expires: 15, secure: true, sameSite: 'strict' });
+      const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(accessToken);
       if (decodedToken.sub) {
         setIsLoggedIn(true);
         fetchUserData(Number(decodedToken.sub));
@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const token = Cookies.get('token');
     if (token) {
       try {
-        const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(token); 
+        const decodedToken: { sub: string } = jwtDecode<{ sub: string }>(token);
         if (decodedToken.sub) {
           setIsLoggedIn(true);
           fetchUserData(Number(decodedToken.sub));

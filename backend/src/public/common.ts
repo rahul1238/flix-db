@@ -1,5 +1,5 @@
 export const jwtConstants = {
-  secret: 'secret'
+  secret: process.env.JWT_SECRET_KEY
 }
 export enum Status {
   ACTIVE = 'active',
