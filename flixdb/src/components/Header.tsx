@@ -10,13 +10,13 @@ import SearchBar from './SearchBar';
 import LoginForm from '../forms/LoginForm';
 import SignupForm from '../forms/SignupForm';
 
-
 const Header: React.FC = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [profileMenuAnchorEl, setProfileMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   const { isLoggedIn, logout, user } = useAuth();
   const theme = useTheme();
@@ -29,8 +29,10 @@ const Header: React.FC = () => {
   const handleSearchIconClick = () => setShowSearchBar((prev) => !prev);
   const handleSignupSuccess = (message: string) => setSuccessMessage(message);
   const handleSnackbarClose = () => setSuccessMessage(null);
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => setMenuAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setMenuAnchorEl(null);
+  const handleProfileMenuClick = (event: React.MouseEvent<HTMLElement>) => setProfileMenuAnchorEl(event.currentTarget);
+  const handleProfileMenuClose = () => setProfileMenuAnchorEl(null);
 
   return (
     <AppBar position="static" color="default">
@@ -40,7 +42,7 @@ const Header: React.FC = () => {
             <IconButton color="inherit" onClick={handleMenuClick} aria-label="menu">
               <MenuIcon />
             </IconButton>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+            <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
               {isLoggedIn && (user?.role === 'admin' || user?.role === 'promoter') && (
                 <MenuItem component={Link} to="/mymovies" onClick={handleMenuClose}>
                   My Movies
@@ -66,12 +68,21 @@ const Header: React.FC = () => {
             </Box>
             {isLoggedIn ? (
               <>
-                <IconButton color="inherit" component={Link} to="/profile" aria-label="profile">
+                <IconButton color="inherit" onClick={handleProfileMenuClick} aria-label="profile">
                   <AccountCircleIcon />
                 </IconButton>
-                <IconButton color="inherit" onClick={logout} aria-label="logout">
-                  <ExitToAppIcon />
-                </IconButton>
+                <Menu
+                  anchorEl={profileMenuAnchorEl}
+                  open={Boolean(profileMenuAnchorEl)}
+                  onClose={handleProfileMenuClose}
+                >
+                  <MenuItem component={Link} to="/profile" onClick={handleProfileMenuClose}>
+                    Profile
+                  </MenuItem>
+                  <MenuItem onClick={() => { logout(); handleProfileMenuClose(); }}>
+                    Logout
+                  </MenuItem>
+                </Menu>
               </>
             ) : (
               <Button color="inherit" onClick={handleLoginOpen}>
