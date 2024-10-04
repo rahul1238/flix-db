@@ -1,0 +1,8 @@
+{
+  "name": "flix-monorepo",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "flixdb"
+  ]
+}
