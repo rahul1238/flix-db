@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import {Dialog,DialogTitle,DialogContent,TextField,DialogActions,Button,Typography,Box,IconButton,InputAdornment,} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, Typography, Box, IconButton, InputAdornment, } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ForgotPasswordDialog from '../components/ForgotPasswordDialog';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 interface LoginFormProps {
   open: boolean;
@@ -18,7 +19,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) =>
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false); 
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +110,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) =>
           >
             Forgot Password?
           </Typography>
+          <Box mt={2}>
+            <GoogleLoginButton />
+          </Box>
         </DialogContent>
         <DialogActions sx={{ flexDirection: 'column', alignItems: 'center', gap: 1 }}>
           <Button onClick={handleLogin} variant="contained" color="primary">

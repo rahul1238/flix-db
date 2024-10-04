@@ -17,7 +17,11 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_CLIENT_ID as string;
+
+if (!GOOGLE_CLIENT_ID) {
+  console.error("Google Client ID is not set in environment variables.");
+}
 
 root.render(
   <React.StrictMode>

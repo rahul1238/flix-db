@@ -6,12 +6,10 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     ports:
-      - 5432:5432  
+      - 5432:5432
 
     environment:
-      - POSTGRES_DB=flixDB
-      - POSTGRES_USER=stark
-      - POSTGRES_PASSWORD=starkdb05
+      - .env
 
   adminer:
     image: adminer

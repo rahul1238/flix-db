@@ -11,7 +11,6 @@ const GoogleLoginButton = () => {
       console.log('Login successful:', response.data);
     } catch (error) {
       console.error('Login failed:', error);
-      // Handle errors, e.g., show a message to the user
     }
   };
 
