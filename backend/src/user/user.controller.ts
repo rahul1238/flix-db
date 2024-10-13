@@ -3,6 +3,7 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { UploadService } from 'src/upload/upload.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -81,6 +82,34 @@ export class UserController {
       };
     } catch (error) {
       this.handleServiceError(error, 'fetching user by ID');
+    }
+  }
+
+  //Update a user by ID
+  @Patch(':id')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @UploadedFile() avatar: Express.Multer.File,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<{ success: boolean; user?: User; message: string }> {
+    if (avatar) {
+      const avatarUrl = await this.uploadService.uploadImage(avatar);
+      updateUserDto.avatar = avatarUrl;
+    }
+    try {
+      const updatedUser = await this.userService.updateUser(
+        userId,
+        updateUserDto,
+      );
+      return {
+        success: true,
+        user: instanceToPlain(updatedUser) as User,
+        message: 'User updated successfully',
+      };
+    } catch (error) {
+      this.handleServiceError(error, 'updating user');
     }
   }
 

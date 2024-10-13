@@ -4,6 +4,7 @@ import { User } from './user.entity';
 import { Repository, MoreThan } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { instanceToPlain } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
@@ -137,6 +138,21 @@ export class UserService {
       return user;
     } catch (error) {
       this.handleDatabaseError(error, 'fetching user by ID');
+    }
+  }
+
+  // Update user details
+  async updateUser(id: number, userDto: UpdateUserDto): Promise<User> {
+    try {
+      const user = await this.getUserById(id);
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      
+      this.userRepository.merge(user, userDto);
+      return await this.userRepository.save(user);
+    } catch (error) {
+      this.handleDatabaseError(error, 'updating user');
     }
   }
 

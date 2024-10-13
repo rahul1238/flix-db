@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Avatar, TextField, Button } from '@mui/material';
+import { Container, Typography, Box, Avatar, TextField, Button, IconButton, Dialog, DialogContent } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import './css/Profile.css';
 
 const Profile: React.FC = () => {
-  const { isLoggedIn, user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const { isLoggedIn, user } = useAuth();
   const [profileData, setProfileData] = useState({
+    id: user?.id || 0,
     name: user?.name || '',
     username: user?.username || '',
     email: user?.email || '',
-    mobile: user?.mobile || '',
+    phone: user?.phone || '',
     role: user?.role || '',
-    avatar: user?.avatar || '', 
+    avatar: user?.avatar || '',
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [openImageDialog, setOpenImageDialog] = useState(false);
 
   if (!isLoggedIn || !user) {
     return (
-      <Container sx={{ textAlign: 'center', mt: 4 }}>
+      <Container className="container">
         <Typography variant="h6" color="textSecondary">
           No user details available. Please log in.
         </Typography>
@@ -32,19 +38,53 @@ const Profile: React.FC = () => {
   const handleCancelClick = () => {
     setIsEditing(false);
     setProfileData({
+      id: user?.id || 0,
       name: user?.name || '',
       username: user?.username || '',
       email: user?.email || '',
-      mobile: user?.mobile || '',
+      phone: user?.phone || '',
       role: user?.role || '',
       avatar: user?.avatar || '',
     });
     setSelectedImage(null);
   };
 
-  const handleSaveClick = () => {
-    // Implement the logic to save the updated profile data (e.g., API call)
-    setIsEditing(false);
+  const handleSaveClick = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append('name', profileData.name);
+      formData.append('username', profileData.username);
+      formData.append('email', profileData.email);
+      formData.append('phone', profileData.phone);
+      formData.append('role', profileData.role);
+      if (selectedImage) {
+        formData.append('avatar', selectedImage);
+      }
+
+      console.log('Form Data before sending:', Array.from(formData.entries()));
+
+      const response = await axios.patch(
+        `http://localhost:3001/api/users/${profileData.id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log('Profile updated successfully:', response.data);
+      } else {
+        console.error('Failed to update profile:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    } finally {
+      setIsEditing(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,88 +101,132 @@ const Profile: React.FC = () => {
     }
   };
 
+  const handleAvatarClick = () => {
+    setOpenImageDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenImageDialog(false);
+  };
+
   return (
-    <Container sx={{ mt: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+    <Container className="container">
+      <Box className="avatar-box" sx={{ position: 'relative', display: 'flex', justifyContent: 'center', mb: 4 }}>
         <Avatar
-          sx={{ width: 56, height: 56, mr: 2 }}
           src={selectedImage ? URL.createObjectURL(selectedImage) : profileData.avatar}
+          alt={user.name}
+          sx={{ width: 150, height: 150, boxShadow: 3, cursor: 'pointer' }}
+          onClick={handleAvatarClick}
+        />
+        <IconButton
+          color="primary"
+          component="label"
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            right: 'calc(50% - 24px)',
+            backgroundColor: 'white',
+            boxShadow: 2,
+            '&:hover': {
+              backgroundColor: '#f0f0f0',
+            },
+          }}
         >
-          {!profileData.avatar && (user.name ? user.name.charAt(0) : user.username.charAt(0).toUpperCase() || 'U')}
-        </Avatar>
-        {isEditing ? (
-          <TextField
-            label="Name"
-            name="name"
-            value={profileData.name}
-            onChange={handleInputChange}
-            fullWidth
-          />
-        ) : (
-          <Typography variant="h4">{profileData.name || profileData.username}</Typography>
-        )}
-      </Box>
-      
-      {isEditing ? (
-        <>
-          <TextField
-            label="Username"
-            name="username"
-            value={profileData.username}
-            onChange={handleInputChange}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Email"
-            name="email"
-            value={profileData.email}
-            onChange={handleInputChange}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Mobile"
-            name="mobile"
-            value={profileData.mobile}
-            onChange={handleInputChange}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Role"
-            name="role"
-            value={profileData.role}
-            onChange={handleInputChange}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
+          <PhotoCamera />
           <input
             accept="image/*"
             type="file"
+            hidden
             onChange={handleImageChange}
-            style={{ marginBottom: 16 }}
           />
-          <Box>
-            <Button variant="contained" color="primary" onClick={handleSaveClick} sx={{ mr: 2 }}>
-              Save
+        </IconButton>
+      </Box>
+
+      <Dialog open={openImageDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+        <DialogContent sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+          <img
+            src={selectedImage ? URL.createObjectURL(selectedImage) : profileData.avatar}
+            alt="Full Size Avatar"
+            style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: '8px' }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Box mt={3}>
+        <Typography variant="h5" mb={2}>Edit Profile</Typography>
+        {isEditing ? (
+          <>
+            <Box mb={2}>
+              <TextField
+                label="Full Name"
+                name="name"
+                placeholder="Enter your name"
+                value={profileData.name}
+                onChange={handleInputChange}
+                fullWidth
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Username"
+                name="username"
+                placeholder="Enter your username"
+                value={profileData.username}
+                onChange={handleInputChange}
+                fullWidth
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Email"
+                name="email"
+                placeholder="Enter your email"
+                value={profileData.email}
+                onChange={handleInputChange}
+                fullWidth
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Phone"
+                name="phone"
+                placeholder="Enter your phone number"
+                value={profileData.phone}
+                onChange={handleInputChange}
+                fullWidth
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Role"
+                name="role"
+                placeholder="Enter your role"
+                value={profileData.role}
+                onChange={handleInputChange}
+                fullWidth
+              />
+            </Box>
+            <Box className="button-group" mt={2}>
+              <Button variant="contained" color="primary" onClick={handleSaveClick}>
+                Save
+              </Button>
+              <Button variant="outlined" color="secondary" onClick={handleCancelClick} style={{ marginLeft: '8px' }}>
+                Cancel
+              </Button>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Typography variant="h6">Username: {profileData.username}</Typography>
+            {profileData.phone && <Typography variant="h6">Mobile: {profileData.phone}</Typography>}
+            <Typography variant="h6">Email: {profileData.email}</Typography>
+            <Typography variant="h6">Role: {profileData.role}</Typography>
+            <Button variant="contained" onClick={handleEditClick}>
+              Edit Profile
             </Button>
-            <Button variant="outlined" color="secondary" onClick={handleCancelClick}>
-              Cancel
-            </Button>
-          </Box>
-        </>
-      ) : (
-        <>
-          <Typography variant="h6">Username: {profileData.username}</Typography>
-          {profileData.mobile && <Typography variant="h6">Mobile: {profileData.mobile}</Typography>}
-          <Typography variant="h6">Email: {profileData.email}</Typography>
-          <Typography variant="h6">Role: {profileData.role}</Typography>
-          <Button variant="contained" onClick={handleEditClick} sx={{ mt: 2 }}>
-            Edit Profile
-          </Button>
-        </>
-      )}
+          </>
+        )}
+      </Box>
     </Container>
   );
 };

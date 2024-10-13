@@ -9,7 +9,7 @@ interface User {
   email: string;
   name: string;
   username: string;
-  mobile: string;
+  phone: string;
   avatar: string;
 }
 

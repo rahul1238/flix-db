@@ -55,7 +55,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ open, onClose, onSignupSuccess 
   };
 
   const handleSignup = async () => {
-    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match. Please try again.');
       return;
