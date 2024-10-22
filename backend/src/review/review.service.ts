@@ -51,7 +51,7 @@ export class ReviewService {
     try {
       const movieReviews = await this.reviewRepository.find({
         where: { movie: { id: movieId } },
-        relations: ['movie', 'user'], // Include user relation if needed for context
+        relations: ['movie', 'user'],
       });
 
       if (!movieReviews.length) {

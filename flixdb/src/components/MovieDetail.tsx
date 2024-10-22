@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Typography, Box, Grid, Card, CardContent, CardMedia, CircularProgress } from '@mui/material';
-import { useParams } from 'react-router-dom';
-import GenrePopup from './GenrePopUp';
-import PromoterPopup from './PromoterPopUp';
-import { formatDate } from '../utils/formatDate';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {Typography,Box,Grid,Card,CardContent,CardMedia,CircularProgress,} from "@mui/material";
+import { useParams } from "react-router-dom";
+import GenrePopup from "./GenrePopUp";
+import PromoterPopup from "./PromoterPopUp";
+import { formatDate } from "../utils/formatDate";
+import Review from "./Review";
 
 interface Genre {
   id: number;
@@ -22,10 +23,15 @@ interface Promoter {
   director: string | null;
 }
 
-interface Review {
+interface MovieReview {
   id: number;
+  movieId: number;
+  userId: number;
+  username: string;
+  headline: string;
   feedback: string;
   rating: number;
+  createdAt: string;
 }
 
 interface Movie {
@@ -39,7 +45,7 @@ interface Movie {
   imageUrl: string[];
   promoter: Promoter;
   genres: Genre[];
-  reviews: Review[];
+  reviews: MovieReview[];
 }
 
 const MovieDetail: React.FC = () => {
@@ -47,17 +53,21 @@ const MovieDetail: React.FC = () => {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
-  const [selectedPromoter, setSelectedPromoter] = useState<Promoter | null>(null);
+  const [selectedPromoter, setSelectedPromoter] = useState<Promoter | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
-        const response = await axios.get<{ success: boolean; data: Movie; message: string }>(
-          `http://localhost:3001/api/movies/${id}`
-        );
+        const response = await axios.get<{
+          success: boolean;
+          data: Movie;
+          message: string;
+        }>(`http://localhost:3001/api/movies/${id}`);
         setMovie(response.data.data);
       } catch (error) {
-        console.error('Error fetching movie details:', error);
+        console.error("Error fetching movie details:", error);
         setMovie(null);
       } finally {
         setLoading(false);
@@ -69,17 +79,18 @@ const MovieDetail: React.FC = () => {
 
   const handleGenreClick = (genre: Genre) => setSelectedGenre(genre);
   const handleGenrePopupClose = () => setSelectedGenre(null);
-  const handlePromoterClick = (promoter: Promoter) => setSelectedPromoter(promoter);
+  const handlePromoterClick = (promoter: Promoter) =>
+    setSelectedPromoter(promoter);
   const handlePromoterPopupClose = () => setSelectedPromoter(null);
 
   if (loading) {
     return (
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
         }}
       >
         <CircularProgress />
@@ -97,7 +108,13 @@ const MovieDetail: React.FC = () => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography align="center" variant="h4" component="div" color="textPrimary" sx={{ mb: 2 }}>
+      <Typography
+        align="center"
+        variant="h4"
+        component="div"
+        color="textPrimary"
+        sx={{ mb: 2 }}
+      >
         {movie.title}
       </Typography>
       <Grid container spacing={2}>
@@ -112,7 +129,7 @@ const MovieDetail: React.FC = () => {
                       image={url}
                       alt={`Movie image ${index + 1}`}
                       loading="lazy"
-                      sx={{ height: '100%', objectFit: 'cover' }}
+                      sx={{ height: "100%", objectFit: "cover" }}
                     />
                   </Card>
                 </Grid>
@@ -141,12 +158,16 @@ const MovieDetail: React.FC = () => {
               </Typography>
               <Typography variant="h6">Type</Typography>
               <Typography variant="body2" color="textSecondary">
-                {movie.type === 'movie' ? 'Movie' : movie.type}
+                {movie.type === "movie" ? "Movie" : movie.type}
               </Typography>
               <Typography variant="h6">Promoter</Typography>
               <Typography variant="body2" color="textSecondary">
                 <span
-                  style={{ textDecoration: 'none', color: 'blue', cursor: 'pointer' }}
+                  style={{
+                    textDecoration: "none",
+                    color: "blue",
+                    cursor: "pointer",
+                  }}
                   onClick={() => handlePromoterClick(movie.promoter)}
                 >
                   {movie.promoter.name}
@@ -155,19 +176,19 @@ const MovieDetail: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Genres
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
                 {movie.genres && movie.genres.length > 0 ? (
                   movie.genres.map((genre) => (
                     <Box
                       key={genre.id}
                       sx={{
-                        padding: '4px 12px',
-                        borderRadius: '16px',
-                        border: '1px solid #ccc',
-                        cursor: 'pointer',
-                        display: 'inline-block',
-                        '&:hover': {
-                          backgroundColor: '#f0f0f0',
+                        padding: "4px 12px",
+                        borderRadius: "16px",
+                        border: "1px solid #ccc",
+                        cursor: "pointer",
+                        display: "inline-block",
+                        "&:hover": {
+                          backgroundColor: "#f0f0f0",
                         },
                       }}
                       onClick={() => handleGenreClick(genre)}
@@ -186,30 +207,20 @@ const MovieDetail: React.FC = () => {
             </CardContent>
           </Card>
         </Grid>
+        <Grid item xs={12}>
+          <Review movieId={movie.id} />
+        </Grid>
       </Grid>
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          Reviews
-        </Typography>
-        {movie.reviews && movie.reviews.length > 0 ? (
-          movie.reviews.map((review) => (
-            <Card key={review.id} sx={{ mb: 2 }}>
-              <CardContent>
-                <Typography variant="body2" color="textSecondary">
-                  Rating: {review.rating}
-                </Typography>
-                <Typography variant="body1">{review.feedback}</Typography>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <Typography variant="body2" color="textSecondary">
-            No reviews available.
-          </Typography>
-        )}
-      </Box>
-      <GenrePopup open={!!selectedGenre} onClose={handleGenrePopupClose} genre={selectedGenre} />
-      <PromoterPopup open={!!selectedPromoter} onClose={handlePromoterPopupClose} promoter={selectedPromoter} />
+      <GenrePopup
+        open={!!selectedGenre}
+        onClose={handleGenrePopupClose}
+        genre={selectedGenre}
+      />
+      <PromoterPopup
+        open={!!selectedPromoter}
+        onClose={handlePromoterPopupClose}
+        promoter={selectedPromoter}
+      />
     </Box>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Box, Button, IconButton, Container, Snackbar, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Button, IconButton, Container, Snackbar, Menu, MenuItem, Avatar } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { Search as SearchIcon, Menu as MenuIcon, AccountCircle as AccountCircleIcon, ExitToApp as ExitToAppIcon, Brightness4 as Brightness4Icon, Brightness7 as Brightness7Icon } from '@mui/icons-material';
+import { Search as SearchIcon, Menu as MenuIcon, AccountCircle as AccountCircleIcon, Brightness4 as Brightness4Icon, Brightness7 as Brightness7Icon } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useThemeContext } from '../context/ThemeContext';
 import { useTheme } from '@mui/material/styles';
@@ -69,7 +69,15 @@ const Header: React.FC = () => {
             {isLoggedIn ? (
               <>
                 <IconButton color="inherit" onClick={handleProfileMenuClick} aria-label="profile">
-                  <AccountCircleIcon />
+                  {user?.avatar ? (
+                    <Avatar
+                      src={user.avatar}
+                      alt={user.username}
+                      sx={{ width: 24, height: 24 }}
+                    />
+                  ) : (
+                    <AccountCircleIcon sx={{ fontSize: 24 }} />  
+                  )}
                 </IconButton>
                 <Menu
                   anchorEl={profileMenuAnchorEl}

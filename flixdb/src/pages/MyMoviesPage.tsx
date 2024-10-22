@@ -64,7 +64,7 @@ const MyMoviesPage: React.FC = () => {
               <CardMedia
                 component="img"
                 height="140"
-                image={movie.imageUrl[0] || '/path/to/fallback/image.jpg'} // Fallback for missing images
+                image={movie.imageUrl[0] || '/path/to/fallback/image.jpg'} 
                 alt={movie.title}
               />
               <CardContent>

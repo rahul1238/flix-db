@@ -16,7 +16,7 @@ export class ReviewController {
     @Req() req,
   ): Promise<{ success: boolean; data?: Review; message: string }> {
     try {
-      reviewData.userId = req.user.sub; // Extract user ID from the request
+      reviewData.userId = req.user.sub;
       const result = await this.reviewService.createReview(reviewData);
       return result;
     } catch (error) {

@@ -1,9 +1,12 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateReviewDto {
   @IsNumber()
   @IsNotEmpty()
   rating: number;
+
+  @IsString()
+  headline: string;
 
   @IsString()
   feedback: string;
@@ -13,6 +16,6 @@ export class CreateReviewDto {
   movieId: number;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   userId: number;
 }
