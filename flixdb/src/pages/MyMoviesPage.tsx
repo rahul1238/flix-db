@@ -3,6 +3,7 @@ import { Box, Button, Typography, Grid, Card, CardContent, CardMedia, Snackbar, 
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useNavContext } from '../context/NavContext';
 
 interface Movie {
   id: number;
@@ -19,6 +20,7 @@ const MyMoviesPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { user } = useAuth();
+  const { drawerOpen } = useNavContext();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -50,7 +52,10 @@ const MyMoviesPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3,
+      transform: drawerOpen ? 'translateX(240px)' : 'translateX(0)',
+      transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1)',
+     }}>
       <Typography variant="h4" gutterBottom>
         My Movies
       </Typography>

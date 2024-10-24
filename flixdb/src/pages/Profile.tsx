@@ -1,20 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Typography,
-  Box,
-  Avatar,
-  TextField,
-  Button,
-  IconButton,
-  Dialog,
-  DialogContent,
-  CircularProgress,
-  Card,
-  Grid,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Container, Typography, Box, Avatar, TextField, Button, IconButton, Dialog, DialogContent, CircularProgress, Card, Grid, Snackbar, Alert, } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
 import { useNavContext } from "../context/NavContext";
@@ -243,8 +228,8 @@ const Profile: React.FC = () => {
       className="container"
       sx={{
         mt: 4,
-        ml: drawerOpen ? "240px" : "0px", 
-        transition: "margin 0.3s ease", 
+        transform: drawerOpen ? 'translateX(240px)' : 'translateX(0)',
+        transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1)',
         color: theme.palette.mode === "dark" ? "#fff" : "#000",
       }}
     >
@@ -365,16 +350,16 @@ const Profile: React.FC = () => {
             ) : (
               <>
                 <Typography variant="h6">{profileData.name}</Typography>
-                <Typography variant="body1" sx={{ color: theme.palette.mode==="dark" ? "#ccc" : "#000" }}>
+                <Typography variant="body1" sx={{ color: theme.palette.mode === "dark" ? "#ccc" : "#000" }}>
                   Username: {profileData.username}
                 </Typography>
-                <Typography variant="body1" sx={{ color: theme.palette.mode==="dark" ? "#ccc" : "#000" }}>
+                <Typography variant="body1" sx={{ color: theme.palette.mode === "dark" ? "#ccc" : "#000" }}>
                   Email: {profileData.email}
                 </Typography>
-                <Typography variant="body1" sx={{ color: theme.palette.mode==="dark" ? "#ccc" : "#000" }}>
+                <Typography variant="body1" sx={{ color: theme.palette.mode === "dark" ? "#ccc" : "#000" }}>
                   Phone: {profileData.phone}
                 </Typography>
-                <Typography variant="body1" sx={{ color: theme.palette.mode==="dark" ? "#ccc" : "#000" }}>
+                <Typography variant="body1" sx={{ color: theme.palette.mode === "dark" ? "#ccc" : "#000" }}>
                   Role: {profileData.role}
                 </Typography>
                 <Button

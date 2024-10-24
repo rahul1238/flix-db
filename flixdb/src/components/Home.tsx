@@ -47,8 +47,8 @@ const Home: React.FC = () => {
         backgroundColor: '#1a1a1a',
         color: '#ffffff',
         padding: 2,
-        transition: 'transform 0.3s ease-in-out',
-        transform: drawerOpen ? 'translateX(250px)' : 'translateX(0)',
+        transform: drawerOpen ? 'translateX(240px)' : 'translateX(0)',
+        transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1)',
       }}
     >
       {featuredMovie && (

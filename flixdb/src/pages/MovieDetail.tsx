@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {Typography,Box,Grid,Card,CardContent,CardMedia,CircularProgress,} from "@mui/material";
+import { Typography, Box, Grid, Card, CardContent, CardMedia, CircularProgress, } from "@mui/material";
 import { useParams } from "react-router-dom";
 import GenrePopup from "../components/GenrePopUp";
 import PromoterPopup from "../components/PromoterPopUp";
@@ -110,7 +110,10 @@ const MovieDetail: React.FC = () => {
   }
 
   return (
-    <Box sx={{ p: 2,transform: drawerOpen ? 'translateX(250px)' : 'translateX(0)',transition: 'transform 0.3s ease-in-out' }}>
+    <Box sx={{
+      p: 2, transform: drawerOpen ? 'translateX(240px)' : 'translateX(0)',
+      transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1)',
+    }}>
       <Typography
         align="center"
         variant="h4"
