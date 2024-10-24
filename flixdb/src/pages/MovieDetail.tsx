@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {Typography,Box,Grid,Card,CardContent,CardMedia,CircularProgress,} from "@mui/material";
 import { useParams } from "react-router-dom";
-import GenrePopup from "./GenrePopUp";
-import PromoterPopup from "./PromoterPopUp";
+import GenrePopup from "../components/GenrePopUp";
+import PromoterPopup from "../components/PromoterPopUp";
 import { formatDate } from "../utils/formatDate";
-import Review from "./Review";
+import Review from "../components/Review";
+import { useNavContext } from "../context/NavContext";
 
 interface Genre {
   id: number;
@@ -57,6 +58,8 @@ const MovieDetail: React.FC = () => {
     null
   );
 
+  const { drawerOpen } = useNavContext();
+
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
@@ -107,7 +110,7 @@ const MovieDetail: React.FC = () => {
   }
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 2,transform: drawerOpen ? 'translateX(250px)' : 'translateX(0)',transition: 'transform 0.3s ease-in-out' }}>
       <Typography
         align="center"
         variant="h4"

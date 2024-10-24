@@ -1,19 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  DialogActions,
-  Button,
-  Typography,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  IconButton,
-  InputAdornment,
-} from '@mui/material';
+import {Dialog,DialogTitle,DialogContent,TextField,DialogActions,Button,Typography,MenuItem,Select,FormControl,InputLabel,IconButton,InputAdornment} from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -44,7 +30,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ open, onClose, onSignupSuccess 
     const { id, value } = e.target;
     setFormData((prevFormData) => ({ ...prevFormData, [id]: value }));
 
-    // Clear the error if the confirm password field is updated
     if (id === 'confirmPassword' || id === 'password') {
       setError(null);
     }

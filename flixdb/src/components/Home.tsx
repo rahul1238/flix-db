@@ -3,6 +3,7 @@ import { Grid, Box, Typography, Card, CardMedia, CardContent, Paper } from '@mui
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import MovieCard from './MovieCard';
+import { useNavContext } from '../context/NavContext';
 
 interface Movie {
   id: number;
@@ -18,6 +19,8 @@ interface Movie {
 const Home: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null);
+
+  const { drawerOpen } = useNavContext();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -39,7 +42,15 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <Box sx={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: 2 }}>
+    <Box
+      sx={{
+        backgroundColor: '#1a1a1a',
+        color: '#ffffff',
+        padding: 2,
+        transition: 'transform 0.3s ease-in-out',
+        transform: drawerOpen ? 'translateX(250px)' : 'translateX(0)',
+      }}
+    >
       {featuredMovie && (
         <Card sx={{ marginBottom: 2 }}>
           <CardMedia
