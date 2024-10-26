@@ -10,6 +10,6 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   controllers: [ReviewController],
   providers: [ReviewService],
-  imports: [TypeOrmModule.forFeature([Movie, Review, User]),AuthModule],
+  imports: [TypeOrmModule.forFeature([Movie, Review, User]), AuthModule],
 })
 export class ReviewModule {}

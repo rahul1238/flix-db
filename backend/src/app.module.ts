@@ -53,8 +53,8 @@ import { join } from 'path';
           from: `"No Reply" <${configService.get<string>('MAIL_FROM')}>`,
         },
         template: {
-          dir: join(__dirname, '..', 'public', 'templates'), 
-          adapter: new HandlebarsAdapter(), 
+          dir: join(__dirname, '..', 'public', 'templates'),
+          adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
           },

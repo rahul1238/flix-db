@@ -19,7 +19,9 @@ export class ReviewService {
   ) {}
 
   // Create a new review
-  async createReview(createReviewDto: CreateReviewDto): Promise<{ success: boolean; message: string; data?: Review }> {
+  async createReview(
+    createReviewDto: CreateReviewDto,
+  ): Promise<{ success: boolean; message: string; data?: Review }> {
     const { userId, movieId, ...reviewData } = createReviewDto;
 
     try {
@@ -28,12 +30,18 @@ export class ReviewService {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
-      const movie = await this.movieRepository.findOne({ where: { id: movieId } });
+      const movie = await this.movieRepository.findOne({
+        where: { id: movieId },
+      });
       if (!movie) {
         throw new HttpException('Movie not found', HttpStatus.NOT_FOUND);
       }
 
-      const review = this.reviewRepository.create({ ...reviewData, user, movie });
+      const review = this.reviewRepository.create({
+        ...reviewData,
+        user,
+        movie,
+      });
       const savedReview = await this.reviewRepository.save(review);
 
       return {
@@ -47,7 +55,9 @@ export class ReviewService {
   }
 
   // Fetch reviews for a specific movie
-  async getMovieReviews(movieId: number): Promise<{ success: boolean; data?: Review[]; message: string }> {
+  async getMovieReviews(
+    movieId: number,
+  ): Promise<{ success: boolean; data?: Review[]; message: string }> {
     try {
       const movieReviews = await this.reviewRepository.find({
         where: { movie: { id: movieId } },

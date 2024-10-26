@@ -1,4 +1,19 @@
-import { Body,Controller,Get,Post,Patch,Param,Query,UseGuards,Req,UploadedFiles,UseInterceptors,HttpException,HttpStatus,ParseIntPipe} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  Req,
+  UploadedFiles,
+  UseInterceptors,
+  HttpException,
+  HttpStatus,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { MoviesService } from './movie.service';
 import { Movie } from './movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -27,11 +42,17 @@ export class MoviesController {
       const movies = promoterId
         ? await this.movieService.findMoviesByPromoterId(promoterId)
         : await this.movieService.getAllMovies();
-      const message = promoterId ? 'Movies fetched successfully!' : 'All movies fetched successfully!';
+      const message = promoterId
+        ? 'Movies fetched successfully!'
+        : 'All movies fetched successfully!';
       return { success: true, movies, message };
     } catch (error) {
       console.error('Error while fetching movies:', error);
-      return { success: false, movies: [], message: 'Error while fetching movies' };
+      return {
+        success: false,
+        movies: [],
+        message: 'Error while fetching movies',
+      };
     }
   }
 
@@ -56,10 +77,18 @@ export class MoviesController {
   ): Promise<{ success: boolean; data: Movie[]; message: string }> {
     try {
       const movies = await this.movieService.searchMovies(query);
-      return { success: true, data: movies, message: 'Search results fetched successfully!' };
+      return {
+        success: true,
+        data: movies,
+        message: 'Search results fetched successfully!',
+      };
     } catch (error) {
       console.error('Error while searching movies:', error);
-      return { success: false, data: [], message: 'Error while searching movies' };
+      return {
+        success: false,
+        data: [],
+        message: 'Error while searching movies',
+      };
     }
   }
 
@@ -71,9 +100,16 @@ export class MoviesController {
     try {
       const movie = await this.movieService.getMovieById(movieId);
       if (!movie) {
-        return { success: false, message: 'No movie found with the provided id' };
+        return {
+          success: false,
+          message: 'No movie found with the provided id',
+        };
       }
-      return { success: true, data: instanceToPlain(movie) as Movie, message: 'Movie fetched successfully!' };
+      return {
+        success: true,
+        data: instanceToPlain(movie) as Movie,
+        message: 'Movie fetched successfully!',
+      };
     } catch (error) {
       console.error('Error while fetching movie:', error);
       return { success: false, message: 'Error while fetching movie' };
@@ -91,19 +127,31 @@ export class MoviesController {
     @Req() req,
   ): Promise<{ success: boolean; data?: Movie; message: string }> {
     if (![Role.PROMOTER, Role.ADMIN].includes(req.user.role)) {
-      throw new HttpException('Not authorized to create a movie', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        'Not authorized to create a movie',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     try {
-      const imageUrls = await Promise.all(images.map(image => this.uploadService.uploadImage(image)));
+      const imageUrls = await Promise.all(
+        images.map((image) => this.uploadService.uploadImage(image)),
+      );
       createMovieDto.promoterId = req.user.sub;
       createMovieDto.imageUrl = imageUrls;
 
       const addedMovie = await this.movieService.createMovie(createMovieDto);
-      return { success: true, data: instanceToPlain(addedMovie) as Movie, message: 'Movie added successfully!' };
+      return {
+        success: true,
+        data: instanceToPlain(addedMovie) as Movie,
+        message: 'Movie added successfully!',
+      };
     } catch (error) {
       console.error('Error while creating movie:', error);
-      return { success: false, message: error.message || 'Error while creating entry in database.' };
+      return {
+        success: false,
+        message: error.message || 'Error while creating entry in database.',
+      };
     }
   }
 
@@ -114,11 +162,18 @@ export class MoviesController {
     @Body() updateMovieDto: UpdateMovieDto,
   ): Promise<{ success: boolean; data?: Movie; message?: string }> {
     try {
-      const movie = await this.movieService.updateMovie(movieId, updateMovieDto);
+      const movie = await this.movieService.updateMovie(
+        movieId,
+        updateMovieDto,
+      );
       if (!movie) {
         return { success: false, message: 'Error while updating movie' };
       }
-      return { success: true, data: movie, message: 'Movie Updated Successfully!' };
+      return {
+        success: true,
+        data: movie,
+        message: 'Movie Updated Successfully!',
+      };
     } catch (error) {
       console.error('Error while updating movie:', error);
       return { success: false, message: 'Error while updating movie' };

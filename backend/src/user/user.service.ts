@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository, MoreThan } from 'typeorm';
@@ -67,10 +72,10 @@ export class UserService {
       throw new BadRequestException('User not found');
     }
 
-    user.resetToken = uuidv4(); 
-    user.resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); 
+    user.resetToken = uuidv4();
+    user.resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
     await this.userRepository.save(user);
-    
+
     return user.resetToken;
   }
 
@@ -85,13 +90,16 @@ export class UserService {
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
-    user.resetToken = null; 
-    user.resetTokenExpiry = null; 
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
     await this.userRepository.save(user);
   }
 
   // Validate user's password
-  async validateUserPassword(email: string, password: string): Promise<User | null> {
+  async validateUserPassword(
+    email: string,
+    password: string,
+  ): Promise<User | null> {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
       if (user && (await bcrypt.compare(password, user.password))) {
@@ -113,7 +121,10 @@ export class UserService {
         throw new BadRequestException('User not found');
       }
 
-      const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      const isOldPasswordValid = await bcrypt.compare(
+        oldPassword,
+        user.password,
+      );
       if (!isOldPasswordValid) {
         throw new BadRequestException('Old password is incorrect');
       }
@@ -148,7 +159,7 @@ export class UserService {
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
-      
+
       this.userRepository.merge(user, userDto);
       return await this.userRepository.save(user);
     } catch (error) {

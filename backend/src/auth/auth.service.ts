@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { LoginDto } from './dto/login-user.dto';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -35,16 +41,14 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Google authentication failed');
     }
-
     let existingUser = await this.userService.findUserByEmail(user.email);
 
-    // If user doesn't exist, create a new one
     if (!existingUser) {
       const newUser: CreateUserDto = {
         email: user.email,
         username: user.email.split('@')[0],
-        name: user.name,
-        password: '',
+        name: user.name || 'No Name',
+        password: null,
         role: Role.USER,
         phone: '',
         status: 'active',
@@ -54,9 +58,15 @@ export class AuthService {
       existingUser = await this.userService.createUser(newUser);
     }
 
-    // Generate JWT token with user payload
-    const payload = { email: existingUser.email, sub: existingUser.id, role: existingUser.role };
-    const accessToken = this.jwtService.sign(payload);
+    const payload = {
+      email: existingUser.email,
+      sub: existingUser.id,
+      role: existingUser.role,
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '1h',
+    });
 
     return { accessToken };
   }
@@ -67,24 +77,21 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('User with this email does not exist');
     }
-
-    // Generate reset token
     const resetToken = await this.userService.generateResetToken(user.id);
-
-    // Create reset link
     const resetLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetToken}`;
 
-    // Send the reset password email
     await this.sendResetPasswordEmail(email, resetLink);
   }
 
-  // Reset user's password using the provided reset token
   async resetPassword(token: string, newPassword: string): Promise<void> {
     await this.userService.resetPassword(token, newPassword);
   }
 
   // Send reset password email
-  private async sendResetPasswordEmail(to: string, resetLink: string): Promise<void> {
+  private async sendResetPasswordEmail(
+    to: string,
+    resetLink: string,
+  ): Promise<void> {
     const mailOptions = {
       from: this.configService.get('MAIL_USER'),
       to,

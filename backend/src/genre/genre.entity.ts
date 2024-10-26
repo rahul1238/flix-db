@@ -1,17 +1,12 @@
 import { Movie } from 'src/movie/movie.entity';
-import {
-  Entity,
-  Column,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Genre {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column( {unique:true})
+  @Column({ unique: true })
   name: string;
 
   @Column({ type: 'text' })

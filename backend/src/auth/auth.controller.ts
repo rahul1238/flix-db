@@ -1,10 +1,21 @@
-import { Body, Controller, Post, Request, UseGuards, Get, HttpException, HttpStatus, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Request,
+  UseGuards,
+  Get,
+  HttpException,
+  HttpStatus,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-user.dto';
 import { AuthGuard } from './auth.guard';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SetMetadata } from '@nestjs/common';
+import { AuthGuard as GoogleAuth } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -83,16 +94,13 @@ export class AuthController {
 
   // Initiate Google OAuth process
   @Get('google')
-  @UseGuards(AuthGuard)
-  @SetMetadata('authType', 'google')  // Set metadata to specify Google OAuth
-  async googleAuth() {
-    // This method initiates the Google OAuth process
-  }
+  @UseGuards(GoogleAuth('google'))
+  @SetMetadata('authType', 'google')
+  async googleAuth() {}
 
-  // Handle Google OAuth redirect and process user information
-  @Get('google/redirect')
-  @UseGuards(AuthGuard)
-  @SetMetadata('authType', 'google')  // Set metadata to specify Google OAuth
+  @Post('google/redirect')
+  @UseGuards(GoogleAuth('google'))
+  @SetMetadata('authType', 'google')
   async googleAuthRedirect(@Req() req) {
     try {
       const user = await this.authService.googleLogin(req.user);

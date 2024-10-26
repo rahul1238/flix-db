@@ -1,5 +1,13 @@
 import { Status, movieType } from 'src/public/common';
-import { IsString, IsEnum, IsDateString, IsOptional, IsArray,IsNotEmpty, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsDateString,
+  IsOptional,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateMovieDto {
   @IsString()

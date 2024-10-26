@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  HttpCode,
+  HttpStatus,
+  HttpException,
+} from '@nestjs/common';
 import { GenreService } from './genre.service';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { Genre } from './genre.entity';
@@ -9,7 +17,11 @@ export class GenresController {
 
   // Fetch all genres
   @Get()
-  async getAllGenres(): Promise<{ success: boolean; data: Genre[]; message: string }> {
+  async getAllGenres(): Promise<{
+    success: boolean;
+    data: Genre[];
+    message: string;
+  }> {
     try {
       const genres = await this.genreService.getAllGenre();
       return {
@@ -44,7 +56,10 @@ export class GenresController {
   private handleControllerError(error: any, operation: string): never {
     console.error(`Error while ${operation}:`, error);
     throw new HttpException(
-      { success: false, message: `An error occurred while ${operation}. Please try again later.` },
+      {
+        success: false,
+        message: `An error occurred while ${operation}. Please try again later.`,
+      },
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }

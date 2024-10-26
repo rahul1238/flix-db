@@ -9,7 +9,11 @@ import { UploadModule } from 'src/upload/upload.module';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Movie,Genre,User]),UploadModule,AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([Movie, Genre, User]),
+    UploadModule,
+    AuthModule,
+  ],
   controllers: [MoviesController],
   providers: [MoviesService],
 })

@@ -1,4 +1,10 @@
-import {Entity,Column,PrimaryGeneratedColumn,ManyToOne,JoinColumn,} from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Movie } from 'src/movie/movie.entity';
 import { User } from 'src/user/user.entity';
 
@@ -12,7 +18,7 @@ export class Review {
 
   @Column({ type: 'text' })
   headline: string;
-  
+
   @Column({ type: 'text' })
   feedback: string;
 
@@ -27,6 +33,10 @@ export class Review {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
 }

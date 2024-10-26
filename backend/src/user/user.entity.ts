@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, BeforeInsert, BeforeUpdate } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm';
 import { Movie } from 'src/movie/movie.entity';
 import { Role } from 'src/public/common';
 import { Review } from 'src/review/review.entity';
@@ -36,7 +43,7 @@ export class User {
   status: string;
 
   @Column({ nullable: true })
-  resetToken: string; 
+  resetToken: string;
 
   @Column({ nullable: true, type: 'timestamp' })
   resetTokenExpiry: Date | null;
@@ -50,7 +57,7 @@ export class User {
   @BeforeInsert()
   @BeforeUpdate()
   async encryptPassword() {
-    if (this.password && !this.password.startsWith('$2b$')) { 
+    if (this.password && !this.password.startsWith('$2b$')) {
       const salt = await bcrypt.genSalt(10);
       this.password = await bcrypt.hash(this.password, salt);
     }

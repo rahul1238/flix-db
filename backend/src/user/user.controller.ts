@@ -1,4 +1,18 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { UploadService } from 'src/upload/upload.service';
