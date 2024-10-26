@@ -37,8 +37,8 @@ const NavBar: React.FC = () => {
                         src={user?.avatar}
                         sx={{ width: 80, height: 80, mb: 2 }}
                     />
-                    <Typography variant="h6">{user?.name}</Typography>
-                    <Typography variant="body2" sx={{ color: 'gray' }}>
+                    <Typography variant="h6" sx={{ color:theme.palette.mode === "dark"?'white':'black' }}>{user?.name}</Typography>
+                    <Typography variant="body2" sx={{ color:theme.palette.mode === "dark"?'white':'black' }}>
                         {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Unknown Role'}
                     </Typography>
 
@@ -51,44 +51,44 @@ const NavBar: React.FC = () => {
                 sx={{
                     width: '100%',
                     '& .MuiListItem-root:hover': {
-                        backgroundColor: 'secondary.light',
+                        backgroundColor:theme.palette.mode === "dark"? 'secondary.dark':'secondary.light',
                     },
                 }}
             >
                 <ListItem button component={Link} to="/">
                     <ListItemIcon>
-                        <Home sx={{ color: 'white' }} />
+                        <Home sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                     </ListItemIcon>
-                    <ListItemText primary="Home" sx={{ color: 'white' }} />
+                    <ListItemText primary="Home" sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                 </ListItem>
 
                 <ListItem button component={Link} to="/mymovies">
                     <ListItemIcon>
-                        <Movie sx={{ color: 'white' }} />
+                        <Movie sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                     </ListItemIcon>
-                    <ListItemText primary="My Movies" sx={{ color: 'white' }} />
+                    <ListItemText primary="My Movies" sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                 </ListItem>
 
                 <ListItem button component={Link} to="/about">
                     <ListItemIcon>
-                        <Info sx={{ color: 'white' }} />
+                        <Info sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                     </ListItemIcon>
-                    <ListItemText primary="About" sx={{ color: 'white' }} />
+                    <ListItemText primary="About" sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                 </ListItem>
 
                 <ListItem button component={Link} to="/help">
                     <ListItemIcon>
-                        <Help sx={{ color: 'white' }} />
+                        <Help sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                     </ListItemIcon>
-                    <ListItemText primary="Help" sx={{ color: 'white' }} />
+                    <ListItemText primary="Help" sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                 </ListItem>
 
                 {isLoggedIn && user?.role === 'admin' && (
                     <ListItem button component={Link} to="/admin">
                         <ListItemIcon>
-                            <AdminPanelSettings sx={{ color: 'white' }} />
+                            <AdminPanelSettings sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                         </ListItemIcon>
-                        <ListItemText primary="Admin" sx={{ color: 'white' }} />
+                        <ListItemText primary="Admin" sx={{ color: theme.palette.mode === "dark"?'white':'black' }} />
                     </ListItem>
                 )}
             </List>

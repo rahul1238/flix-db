@@ -60,7 +60,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ open, onClose, onSignupSuccess 
       setError(null);
       onClose();
       navigate('/');
-    } catch (error: any) {
+    } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setError(error.response.data.message || 'Error signing up. Please try again.');
       } else {

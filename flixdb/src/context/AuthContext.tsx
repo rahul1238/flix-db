@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
@@ -26,7 +26,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
-  const fetchUserData = async (userId: number) => {
+  const logout = useCallback(() => {
+    setIsLoggedIn(false);
+    setUser(null);
+    Cookies.remove('token');
+  }, []);
+
+  const fetchUserData = useCallback(async (userId: number) => {
     try {
       const response = await axios.get(`http://localhost:3001/api/users/${userId}`, {
         headers: {
@@ -38,7 +44,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('Error fetching user data:', error);
       logout();
     }
-  };
+  }, [logout]);  // Include logout in the dependency array
 
   const login = (accessToken: string) => {
     try {
@@ -54,12 +60,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('Error decoding token:', error);
       logout();
     }
-  };
-
-  const logout = () => {
-    setIsLoggedIn(false);
-    setUser(null);
-    Cookies.remove('token');
   };
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         logout();
       }
     }
-  }, []);
+  }, [fetchUserData, logout]); 
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>

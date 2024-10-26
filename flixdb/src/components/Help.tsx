@@ -13,7 +13,7 @@ const Help: React.FC = () => {
                     Need Help?
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    If you need any assistance or have any questions regarding FLiXDB, we're here to help! Feel free to reach out to us.
+                    If you need any assistance or have any questions regarding FLiXDB, we`&apos;`re here to help! Feel free to reach out to us.
                 </Typography>
                 <Button variant="contained" color="primary" onClick={handleContactClick}>
                     Contact Developer

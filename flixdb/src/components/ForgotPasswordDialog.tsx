@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {Dialog,DialogTitle,DialogContent,TextField,DialogActions,Button,Typography,} from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { on } from 'events';
 
 interface ForgotPasswordDialogProps {
   open: boolean;

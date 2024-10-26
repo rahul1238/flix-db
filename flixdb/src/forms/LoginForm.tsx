@@ -123,7 +123,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) =>
           </Button>
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" color="textSecondary">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <span
                 style={{ cursor: 'pointer', color: 'blue' }}
                 onClick={onSignupOpen}

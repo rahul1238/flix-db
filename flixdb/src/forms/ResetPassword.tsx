@@ -32,7 +32,7 @@ const ResetPassword = () => {
       setSuccess('Password has been reset successfully. You can now log in.');
       navigate('/');
     } catch (err) {
-      setError('Error resetting password. Please try again.');
+      setError( 'Error resetting password. Please try again.');
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Box, List, ListItem, ListItemText } from '@mui/material';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -19,7 +19,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ onMovieClick }) => {
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const theme = useTheme();
 
-  // Stable fetch function without debounce directly in useCallback
   const fetchMovies = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -36,16 +35,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onMovieClick }) => {
     }
   };
 
-  // Debounced version of fetchMovies created inside useEffect to avoid dependency issues
-  const debouncedFetchMovies = useCallback(debounce(fetchMovies, 500), []);
-
+  // Debounce fetchMovies inside useEffect to ensure a stable function is used
   useEffect(() => {
-    debouncedFetchMovies(query);
-    // Cleanup debounce on component unmount
+    const debouncedFetch = debounce(fetchMovies, 500);
+    if (query) {
+      debouncedFetch(query);
+    }
     return () => {
-      debouncedFetchMovies.cancel();
+      debouncedFetch.cancel();
     };
-  }, [query, debouncedFetchMovies]);
+  }, [query]); // Only depends on query
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
