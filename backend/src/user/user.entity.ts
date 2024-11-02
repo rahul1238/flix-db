@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  BeforeInsert,
-  BeforeUpdate,
-} from 'typeorm';
+import {Entity,Column,PrimaryGeneratedColumn,OneToMany,BeforeInsert,BeforeUpdate} from 'typeorm';
 import { Movie } from 'src/movie/movie.entity';
 import { Role } from 'src/public/common';
 import { Review } from 'src/review/review.entity';

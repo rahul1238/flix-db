@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import {Injectable,UnauthorizedException,BadRequestException,HttpException,HttpStatus,} from '@nestjs/common';
 import { LoginDto } from './dto/login-user.dto';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -48,7 +42,7 @@ export class AuthService {
         email: user.email,
         username: user.email.split('@')[0],
         name: user.name || 'No Name',
-        password: null,
+        password: '',
         role: Role.USER,
         phone: '',
         status: 'active',

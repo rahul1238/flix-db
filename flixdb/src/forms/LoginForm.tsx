@@ -111,7 +111,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) =>
             Forgot Password?
           </Typography>
           <Box mt={2}>
-            <GoogleLoginButton />
+            <GoogleLoginButton onClose={onClose} />
           </Box>
         </DialogContent>
         <DialogActions sx={{ flexDirection: 'column', alignItems: 'center', gap: 1 }}>

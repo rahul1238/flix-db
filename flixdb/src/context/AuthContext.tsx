@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('Error fetching user data:', error);
       logout();
     }
-  }, [logout]);  // Include logout in the dependency array
+  }, [logout]);
 
   const login = (accessToken: string) => {
     try {
