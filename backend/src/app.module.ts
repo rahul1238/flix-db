@@ -13,6 +13,7 @@ import { RolesGuard } from './auth/roles.guard';
 import { User } from './user/user.entity';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
@@ -63,6 +64,6 @@ import { join } from 'path';
     }),
   ],
   controllers: [AuthController],
-  providers: [RolesGuard],
+  providers: [RolesGuard,UserService],
 })
 export class AppModule {}

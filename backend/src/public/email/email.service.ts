@@ -18,7 +18,7 @@ export class EmailService {
         subject: 'Password Reset Request',
         template: './reset-password',
         context: {
-          resetUrl, 
+          resetUrl,
         },
       });
     } catch (error) {
