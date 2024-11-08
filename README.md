@@ -98,7 +98,7 @@ Frontend: From the flixdb directory, start the frontend:
 
    npm start
 
-Access the application at http://localhost:3000.
+Access the application at http://localhost:3000
 Testing
 Backend Testing:
 
