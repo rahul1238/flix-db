@@ -41,7 +41,7 @@ Prerequisites
 Installation
 Clone the repository:
 
-   git clone https://github.com/yourusername/flix-monorepo.git
+   git clone https://github.com/rahul1238/flix-monorepo.git
    cd flix-monorepo
 Install dependencies for the entire monorepo:
 
