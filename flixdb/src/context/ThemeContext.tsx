@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useMemo, useState, useContext, ReactNode, useEffect } from 'react';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { PaletteMode } from '@mui/material';
 
@@ -21,7 +21,13 @@ interface CustomThemeProviderProps {
 }
 
 export const CustomThemeProvider: React.FC<CustomThemeProviderProps> = ({ children }) => {
-  const [mode, setMode] = useState<PaletteMode>('light');
+  const [mode, setMode] = useState<PaletteMode>(
+    () => (localStorage.getItem('theme') as PaletteMode) || 'light'
+  );
+
+  useEffect(() => {
+    localStorage.setItem('theme', mode);
+  }, [mode]);
 
   const theme = useMemo(
     () =>

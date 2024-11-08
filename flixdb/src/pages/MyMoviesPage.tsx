@@ -59,34 +59,40 @@ const MyMoviesPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         My Movies
       </Typography>
-      <Button variant="contained" color="primary" component={Link} to="/upload">
+      <Button variant="contained" color="primary" component={Link} to="/upload" disabled={user?.role === 'user'}>
         Add New Movie
       </Button>
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-        {movies.map((movie) => (
-          <Grid item key={movie.id} xs={12} sm={6} md={4}>
-            <Card>
-              <CardMedia
-                component="img"
-                height="140"
-                image={movie.imageUrl[0] || '/path/to/fallback/image.jpg'} 
-                alt={movie.title}
-              />
-              <CardContent>
-                <Typography variant="h5" component="div">
-                  {movie.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Release Date: {new Date(movie.releaseDate).toLocaleDateString()}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Origin: {movie.origin}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      {user && user.role === 'user' && movies.length === 0  ? (
+        <Typography variant="body1" color="textSecondary" sx={{ mt: 2 }}>
+          No movies have been created by you or you must be a promoter.
+        </Typography>
+      ) : (
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          {movies.map((movie) => (
+            <Grid item key={movie.id} xs={12} sm={6} md={4}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={movie.imageUrl[0] || '/path/to/fallback/image.jpg'}
+                  alt={movie.title}
+                />
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    {movie.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Release Date: {new Date(movie.releaseDate).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Origin: {movie.origin}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
       <Snackbar
         open={!!errorMessage}
         autoHideDuration={6000}

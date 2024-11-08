@@ -1,19 +1,17 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { IconButton } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { Search as SearchIcon } from '@mui/icons-material';
 
 interface SearchIconButtonProps {
-  onSearch: () => void;
+  onSearchIconClick: () => void;
+  isOpen: boolean;
 }
 
-const SearchIconButton: React.FC<SearchIconButtonProps> = ({ onSearch }) => {
+const SearchIconButton: React.FC<SearchIconButtonProps> = ({ onSearchIconClick, isOpen }) => {
+  const iconRef = useRef<HTMLButtonElement>(null);
+
   return (
-    <IconButton 
-      color="inherit" 
-      onClick={onSearch} 
-      aria-label="search" 
-      sx={{ p: 1 }} 
-    >
+    <IconButton color="inherit" onClick={onSearchIconClick} ref={iconRef} aria-label="search">
       <SearchIcon />
     </IconButton>
   );
