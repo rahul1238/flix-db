@@ -35,10 +35,10 @@ export class User {
   @Column({ default: 'active' })
   status: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   resetToken: string | null;
 
-  @Column({ nullable: true, type: 'timestamp' })
+  @Column({ type: 'timestamptz', nullable: true })
   resetTokenExpiry: Date | null;
 
   @OneToMany(() => Movie, (movie) => movie.promoter)
