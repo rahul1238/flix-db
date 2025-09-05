@@ -1,17 +1,14 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "flixdb/package.json",
-        "use": "@vercel/static-build",
-        "config": { "distDir": "build" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "flixdb/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build",
+        "buildCommand": "npm run build"
       }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/index.html"
-      }
-    ]
-  }
-  
+    }
+  ],
+  "routes": [{ "src": "/(.*)", "dest": "/index.html" }]
+}
