@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Typography, Box, Grid, Card, CardContent, CardMedia, CircularProgress, } from "@mui/material";
+import { Typography, Box, Grid, Card, CardContent, CardMedia, CircularProgress, Chip, Stack } from "@mui/material";
+import PageIntro from "../components/PageIntro";
 import { useParams } from "react-router-dom";
 import GenrePopup from "../components/GenrePopUp";
 import PromoterPopup from "../components/PromoterPopUp";
@@ -110,19 +111,22 @@ const MovieDetail: React.FC = () => {
   }
 
   return (
-    <Box sx={{
-      p: 2, transform: drawerOpen ? 'translateX(240px)' : 'translateX(0)',
-      transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1)',
-    }}>
-      <Typography
-        align="center"
-        variant="h4"
-        component="div"
-        color="textPrimary"
-        sx={{ mb: 2 }}
+    <Box sx={{ p: 2, transform: drawerOpen ? 'translateX(240px)' : 'translateX(0)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1)' }}>
+      <PageIntro
+        title={movie.title}
+        subtitle={movie.type === 'movie' ? 'Feature Film' : movie.type.charAt(0).toUpperCase()+movie.type.slice(1)}
+        paragraphs={[
+          movie.description,
+          'Below you\'ll find images, release information, origin details, genres and early community reactions. Genre chips are interactive – click to get a concise summary. Promoter profiles highlight who championed the title on the platform.'
+        ]}
+        dense
       >
-        {movie.title}
-      </Typography>
+        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: .5 }}>
+          <Chip size="small" label={`Released: ${formatDate(movie.releaseDate)}`} />
+          <Chip size="small" label={`Origin: ${movie.origin}`} />
+          <Chip size="small" label={`Status: ${movie.status || 'n/a'}`} />
+        </Stack>
+      </PageIntro>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Grid container spacing={2}>
@@ -168,16 +172,13 @@ const MovieDetail: React.FC = () => {
               </Typography>
               <Typography variant="h6">Promoter</Typography>
               <Typography variant="body2" color="textSecondary">
-                <span
-                  style={{
-                    textDecoration: "none",
-                    color: "blue",
-                    cursor: "pointer",
-                  }}
+                <Box
+                  component="span"
+                  sx={{ textDecoration:'none', color:'primary.main', cursor:'pointer', fontWeight:500, '&:hover':{ textDecoration:'underline' } }}
                   onClick={() => handlePromoterClick(movie.promoter)}
                 >
                   {movie.promoter.name}
-                </span>
+                </Box>
               </Typography>
               <Typography variant="h6" gutterBottom>
                 Genres

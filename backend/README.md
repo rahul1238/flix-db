@@ -71,3 +71,34 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Mail / Password Reset Configuration
+
+The reset password feature uses `@nestjs-modules/mailer` with SMTP. Ensure these env vars exist in a `.env` file at the backend root:
+
+```
+MAIL_HOST=smtp.yourprovider.com
+MAIL_PORT=587
+MAIL_USER=your_username
+MAIL_PASSWORD=your_password
+MAIL_FROM=noreply@yourdomain.com
+# OR use a well-known provider shortcut (preferred for Gmail):
+# MAIL_SERVICE=gmail
+# MAIL_USER=youraddress@gmail.com
+# MAIL_PASSWORD=your_app_password  # 16-char App Password, not regular password
+FRONTEND_URL=http://localhost:3000
+```
+
+Notes:
+* Port 587 (STARTTLS) or 465 (secure). If you use 465 set `MAIL_PORT=465` and it will auto-enable `secure`.
+* If `MAIL_USER` / `MAIL_PASSWORD` are missing the app will attempt an unauthenticated connection (works only with local tools like MailHog).
+* For Gmail you MUST create a 16‑character App Password (Account > Security > 2FA enabled > App Passwords) then either:
+  * Set `MAIL_SERVICE=gmail` (simplest), OR
+  * Set `MAIL_HOST=smtp.gmail.com` and `MAIL_PORT=587`.
+* After changes, restart the backend: `npm run start:dev`.
+
+Troubleshooting `Missing credentials for "PLAIN"`:
+1. Confirm env vars are loaded (temporarily log `process.env.MAIL_USER`).
+2. Ensure no quotes around values in `.env` (use `MAIL_USER=user@example.com`, not `"user@example.com"`).
+3. If using Docker, pass env vars into the container.
+4. Some providers require TLS: keep port 587 and allow STARTTLS (default). For 465 the code switches to `secure: true`.

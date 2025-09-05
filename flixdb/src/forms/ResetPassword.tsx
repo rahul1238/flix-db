@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, Box } from '@mui/material';
+import PageIntro from '../components/PageIntro';
 import axios from 'axios';
 
 const ResetPassword = () => {
@@ -37,8 +38,16 @@ const ResetPassword = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4 }}>
-      <Typography variant="h4" gutterBottom>Reset Password</Typography>
+    <Box sx={{ maxWidth: 520, mx: 'auto', mt: 4 }}>
+      <PageIntro
+        title="Reset Password"
+        subtitle="Secure your account with a fresh credential"
+        paragraphs={[
+          'Passwords should be at least 8 characters and avoid easily guessed phrases. A unique passphrase improves security across platforms.',
+          'After a successful reset you will be redirected to the home page and can log in again immediately.'
+        ]}
+        dense
+      />
       {error && <Typography color="error">{error}</Typography>}
       {success && <Typography color="primary">{success}</Typography>}
       <TextField

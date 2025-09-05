@@ -1,27 +1,45 @@
 import React from 'react';
-import { Typography, Container, Paper } from '@mui/material';
+import { Typography, Container, Paper, List, ListItem, ListItemText, Divider, Stack } from '@mui/material';
+import PageIntro from './PageIntro';
 
 const About: React.FC = () => {
     return (
-        <Container maxWidth="md" sx={{ paddingTop: 4 }}>
-            <Paper elevation={3} sx={{ padding: 4, backgroundColor: '#2c2c2c', color: '#fff' }}>
-                <Typography variant="h4" gutterBottom>
-                    About FLiXDB
-                </Typography>
-                <Typography variant="body1" paragraph>
-                    FLiXDB is a comprehensive movie database that allows you to explore and track your favorite movies, TV shows, and actors. Much like IMDb, we provide detailed information about movie releases, cast, crew, and much more.
-                </Typography>
-                <Typography variant="body1" paragraph>
-                    Whether you are a film enthusiast, a casual viewer, or an aspiring filmmaker, FLiXDB is the perfect place to discover, learn, and contribute to the world of cinema. Our platform is designed to be user-friendly, informative, and constantly updated to ensure you stay connected with the latest in entertainment.
-                </Typography>
-                <Typography variant="body1" paragraph>
-                    The developer of FLiXDB is Rahul Kumar, who is dedicated to providing a seamless experience for all users. If you have any queries or would like to get in touch, feel free to reach out via email.
-                </Typography>
-                <Typography variant="body2" sx={{ marginTop: 2 }}>
-                    Developer Contact: <strong>rahul.kumar@example.com</strong>
-                </Typography>
-            </Paper>
-        </Container>
+                <Container maxWidth="md" sx={{ paddingTop: 4 }}>
+                        <PageIntro
+                            title="About FlixDB"
+                            subtitle="Building a modern, community‑aware film index"
+                            paragraphs={[
+                                'FlixDB aims to streamline how enthusiasts, promoters and casual viewers discover screen content. We focus on clarity, speed and trustworthy contributions over ad clutter.',
+                                'Every feature is shaped by real usage: from lightweight submission flows for promoters to clean reading experiences for audiences.'
+                            ]}
+                            dense
+                        />
+                        <Paper elevation={3} sx={{ p:4, borderRadius:4 }}>
+                            <Stack spacing={3}>
+                                <div>
+                                    <Typography variant="h5" gutterBottom fontWeight={600}>Core Principles</Typography>
+                                    <List dense>
+                                        <ListItem><ListItemText primary="Accuracy first – metadata moderation and future version history." /></ListItem>
+                                        <ListItem><ListItemText primary="Performance – fast, distraction‑free browsing on any device." /></ListItem>
+                                        <ListItem><ListItemText primary="Community trust – transparent promoter roles and authentic reviews." /></ListItem>
+                                        <ListItem><ListItemText primary="Extensibility – architecture prepared for cast, crew & streaming availability." /></ListItem>
+                                    </List>
+                                </div>
+                                <Divider />
+                                <div>
+                                    <Typography variant="h5" gutterBottom fontWeight={600}>Upcoming Roadmap</Typography>
+                                    <List dense>
+                                        <ListItem><ListItemText primary="Advanced search & filtering (genre, year, rating)." /></ListItem>
+                                        <ListItem><ListItemText primary="User watchlists & follow features." /></ListItem>
+                                        <ListItem><ListItemText primary="Episode & season structuring for series." /></ListItem>
+                                        <ListItem><ListItemText primary="Review quality signals & abuse prevention." /></ListItem>
+                                    </List>
+                                </div>
+                                <Divider />
+                                <Typography variant="body2">Developer Contact: <strong>rahul.kumar@example.com</strong></Typography>
+                            </Stack>
+                        </Paper>
+                </Container>
     );
 };
 

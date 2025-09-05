@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {Container,TextField,Button,Typography,Box,Select,MenuItem,FormControl,InputLabel,Checkbox,ListItemText,OutlinedInput,SelectChangeEvent,Dialog,DialogTitle,DialogContent,DialogActions,Snackbar,CircularProgress} from '@mui/material';
+import {Container,TextField,Button,Box,Select,MenuItem,FormControl,InputLabel,Checkbox,ListItemText,OutlinedInput,SelectChangeEvent,Dialog,DialogTitle,DialogContent,DialogActions,Snackbar,CircularProgress} from '@mui/material';
+import PageIntro from '../components/PageIntro';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 interface Genre {
   id: number;
@@ -10,6 +12,7 @@ interface Genre {
 }
 
 const UploadMoviePage: React.FC = () => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [type, setType] = useState('');
   const [origin, setOrigin] = useState('');
@@ -53,31 +56,43 @@ const UploadMoviePage: React.FC = () => {
 
   const handleGenreChange = (event: SelectChangeEvent<(number | string)[]>) => {
     const { value } = event.target;
-    if (value.includes('create-new')) {
+    // Value is a union array (numbers coerced to strings internally by MUI Select)
+    if ((value as (string | number)[]).includes('create-new')) {
       setIsCreatingGenre(true);
       return;
     }
-    setGenreIds(value as number[]);
+    // Normalize to numeric IDs, filter out anything invalid
+    const normalized = (value as (string | number)[])
+      .map(v => typeof v === 'number' ? v : Number(v))
+      .filter(v => Number.isFinite(v));
+    setGenreIds(normalized as number[]);
   };
 
   const handleCreateGenre = async () => {
-    if (!newGenreName || !newGenreDescription) {
+    if (!newGenreName.trim() || !newGenreDescription.trim()) {
       setFeedbackMessage('Please fill out all fields to create a new genre.');
       return;
     }
 
     try {
       const response = await axios.post('http://localhost:3001/api/genres', {
-        name: newGenreName,
-        description: newGenreDescription,
+        name: newGenreName.trim(),
+        description: newGenreDescription.trim(),
       });
-      const newGenre = response.data;
-      setGenres([...genres, newGenre]);
-      setGenreIds((prev) => [...prev, newGenre.id]);
+      // Support both { success, data: {...} } and direct object responses
+      const raw = response.data;
+      const newGenre: Genre | undefined = (raw && raw.data && typeof raw.data === 'object') ? raw.data : raw;
+      if (!newGenre || typeof newGenre.id !== 'number') {
+        console.warn('Unexpected genre creation response shape:', raw);
+        setFeedbackMessage('Created genre but response format was unexpected. Refresh to verify.');
+      } else {
+        setGenres(prev => [...prev, newGenre]);
+        setGenreIds(prev => [...prev, newGenre.id]);
+        setFeedbackMessage('Genre created successfully!');
+      }
       setIsCreatingGenre(false);
       setNewGenreName('');
       setNewGenreDescription('');
-      setFeedbackMessage('Genre created successfully!');
     } catch (error) {
       console.error('Error creating genre:', error);
       setFeedbackMessage('Failed to create genre.');
@@ -96,7 +111,18 @@ const UploadMoviePage: React.FC = () => {
     formData.append('releaseDate', releaseDate);
     formData.append('rating', rating);
     formData.append('director', director);
-    genreIds.forEach((id) => formData.append('genreIds', id.toString()));
+    // Append only valid numeric IDs
+    const distinctIds = Array.from(new Set(genreIds)).filter(id => Number.isFinite(id));
+    distinctIds.forEach((id) => {
+      try {
+        formData.append('genreIds', id.toString());
+      } catch (e) {
+        console.warn('Skipping invalid genre id while appending', id, e);
+      }
+    });
+    if (distinctIds.length === 0) {
+      // Optional: server may require at least one genre; keep silent if not mandatory
+    }
     if (images) {
       Array.from(images).forEach((image) => {
         formData.append('image', image);
@@ -110,8 +136,10 @@ const UploadMoviePage: React.FC = () => {
           Authorization: `Bearer ${Cookies.get('token')}`,
         },
       });
-      setFeedbackMessage('Movie uploaded successfully!');
+      setFeedbackMessage('Movie uploaded successfully! Redirecting...');
       console.log('Movie uploaded successfully:', response.data);
+      // Navigate to My Movies after a brief tick to ensure state updates flush
+      setTimeout(() => navigate('/mymovies'), 400);
     } catch (error) {
       console.error('Error uploading movie:', error);
       setFeedbackMessage('Failed to upload movie.');
@@ -125,10 +153,17 @@ const UploadMoviePage: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Upload New Movie
-      </Typography>
+    <Container sx={{ py: 2 }}>
+      <PageIntro
+        title="Submit a Title"
+        subtitle="Provide accurate details to help discovery"
+        paragraphs={[
+          'High‑quality metadata improves search relevance and user trust. Double‑check spelling, select the correct type and prefer concise, spoiler‑free descriptions.',
+          'Images: Upload clear vertical artwork (poster style). Multiple images are supported – the first becomes the primary poster.',
+          'Genres: Pick the closest existing options or create a new genre if truly missing.'
+        ]}
+        dense
+      />
       <form onSubmit={handleSubmit}>
         <TextField
           label="Title"
@@ -147,6 +182,11 @@ const UploadMoviePage: React.FC = () => {
           >
             <MenuItem value="movie">Movie</MenuItem>
             <MenuItem value="series">Series</MenuItem>
+            <MenuItem value="television">Television</MenuItem>
+            <MenuItem value="documentary">Documentary</MenuItem>
+            <MenuItem value="anime">Anime</MenuItem>
+            <MenuItem value="short">Short</MenuItem>
+            <MenuItem value="special">Special</MenuItem>
           </Select>
         </FormControl>
         <TextField
@@ -222,7 +262,7 @@ const UploadMoviePage: React.FC = () => {
             type="file"
             multiple
             onChange={handleFileChange}
-            style={{ display: 'none' }}
+            hidden
           />
           <label htmlFor="image-upload">
             <Button variant="contained" color="primary" component="span">

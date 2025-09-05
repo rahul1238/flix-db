@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Container, Typography, Box, Avatar, TextField, Button, IconButton, Dialog, DialogContent, CircularProgress, Card, Grid, Snackbar, Alert, } from "@mui/material";
+import { Container, Typography, Box, Avatar, TextField, Button, IconButton, Dialog, DialogContent, CircularProgress, Card, Grid, Snackbar, Alert } from "@mui/material";
+import PageIntro from "../components/PageIntro";
 import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
 import { useNavContext } from "../context/NavContext";
@@ -224,15 +225,16 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <Container
-      className="container"
-      sx={{
-        mt: 4,
-        transform: drawerOpen ? 'translateX(240px)' : 'translateX(0)',
-        transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1)',
-        color: theme.palette.mode === "dark" ? "#fff" : "#000",
-      }}
-    >
+    <Container className="container" sx={{ mt: 4, transform: drawerOpen ? 'translateX(240px)' : 'translateX(0)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1)', color: theme.palette.mode === "dark" ? "#fff" : "#000" }}>
+      <PageIntro
+        title="Your Profile"
+        subtitle="Manage identity & personalization"
+        paragraphs={[
+          'Update your public information, adjust your display name and keep contact details current. An authentic profile increases trust when you promote titles or write reviews.',
+          'Avatar changes appear immediately after upload. Roles determine available actions (e.g., promoters can submit new titles).'
+        ]}
+        dense
+      />
       <Card
         sx={{
           p: 4,
@@ -378,12 +380,11 @@ const Profile: React.FC = () => {
 
       <Dialog open={openImageDialog} onClose={handleDialogClose}>
         <DialogContent>
-          <img
-            src={
-              selectedImage ? URL.createObjectURL(selectedImage) : profileData.avatar
-            }
+          <Box
+            component="img"
+            src={ selectedImage ? URL.createObjectURL(selectedImage) : profileData.avatar }
             alt="Preview Avatar"
-            style={{ width: "100%", height: "auto" }}
+            sx={{ width:'100%', height:'auto', display:'block', borderRadius:1 }}
           />
         </DialogContent>
       </Dialog>
