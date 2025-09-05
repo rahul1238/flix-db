@@ -9,6 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build frontend
+        env:
+          REACT_APP_CLIENT_ID: ${{ secrets.REACT_APP_CLIENT_ID }}
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
         run: cd flixdb && npm install && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
