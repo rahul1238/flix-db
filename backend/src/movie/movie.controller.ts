@@ -23,6 +23,15 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from 'src/public/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+
+interface UploadedFileType {
+  fieldname: string;
+  originalname: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+  path?: string;
+}
 import { UploadService } from 'src/upload/upload.service';
 import { instanceToPlain } from 'class-transformer';
 
@@ -122,7 +131,7 @@ export class MoviesController {
   @Roles(Role.PROMOTER, Role.ADMIN)
   @UseInterceptors(FilesInterceptor('image'))
   async createMovie(
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFiles() images: UploadedFileType[],
     @Body() createMovieDto: CreateMovieDto,
     @Req() req,
   ): Promise<{ success: boolean; data?: Movie; message: string }> {

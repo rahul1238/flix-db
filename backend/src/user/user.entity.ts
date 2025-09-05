@@ -36,7 +36,7 @@ export class User {
   status: string;
 
   @Column({ nullable: true })
-  resetToken: string;
+  resetToken: string | null;
 
   @Column({ nullable: true, type: 'timestamp' })
   resetTokenExpiry: Date | null;

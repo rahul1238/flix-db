@@ -1,11 +1,9 @@
 {
-  "name": "flix-monorepo",
+  "name": "flix-root",
   "private": true,
-  "workspaces": [
-    "backend",
-    "flixdb"
-  ],
-  "devDependencies": {
-    "eslint-config-react-app": "^7.0.1"
+  "description": "Root placeholder – backend and flixdb run independently now",
+  "devDependencies": {},
+  "scripts": {
+    "postinstall": "echo 'Install dependencies separately: cd backend && npm i; cd flixdb && npm i'"
   }
 }

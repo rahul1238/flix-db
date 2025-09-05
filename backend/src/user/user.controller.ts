@@ -9,6 +9,16 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { instanceToPlain } from 'class-transformer';
 
+// Minimal file shape (instead of Express.Multer.File)
+interface UploadedFileType {
+  fieldname: string;
+  originalname: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+  path?: string;
+}
+
 @Controller('api/users')
 export class UserController {
   constructor(
@@ -35,7 +45,7 @@ export class UserController {
   @Post()
   @UseInterceptors(FileInterceptor('avatar'))
   async createUser(
-    @UploadedFile() avatar: Express.Multer.File,
+    @UploadedFile() avatar: UploadedFileType,
     @Body() createUserDto: CreateUserDto,
   ): Promise<User> {
     try {
@@ -91,7 +101,7 @@ export class UserController {
   @UseInterceptors(FileInterceptor('avatar'))
   async updateUser(
     @Param('id', ParseIntPipe) userId: number,
-    @UploadedFile() avatar: Express.Multer.File,
+    @UploadedFile() avatar: UploadedFileType,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<{ success: boolean; user?: User; message: string }> {
     if (avatar) {
