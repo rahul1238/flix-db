@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import { api } from '../utils/api';
 import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
 
@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const fetchUserData = useCallback(async (userId: number) => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/users/${userId}`, {
+  const response = await api.get(`/api/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
         },

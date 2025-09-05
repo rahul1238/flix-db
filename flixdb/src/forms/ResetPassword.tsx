@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, Box } from '@mui/material';
 import PageIntro from '../components/PageIntro';
-import axios from 'axios';
+import { api } from '../utils/api';
 
 const ResetPassword = () => {
   const location = useLocation();
@@ -29,7 +29,7 @@ const ResetPassword = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:3001/auth/reset-password', { token, newPassword });
+      await api.post('/auth/reset-password', { token, newPassword });
       setSuccess('Password has been reset successfully. You can now log in.');
       navigate('/');
     } catch (err) {

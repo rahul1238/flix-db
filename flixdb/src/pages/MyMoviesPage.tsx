@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Grid, Card, CardContent, CardMedia, Snackbar, CircularProgress } from '@mui/material';
 import PageIntro from '../components/PageIntro';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { url as apiUrl } from '../utils/api';
 import { useNavContext } from '../context/NavContext';
 
 interface Movie {
@@ -27,7 +28,7 @@ const MyMoviesPage: React.FC = () => {
     const fetchMovies = async () => {
       if (!user) return;
       try {
-        const response = await axios.get(`http://localhost:3001/api/movies?promoterId=${user.id}`);
+        const response = await api.get(`/api/movies?promoterId=${user.id}`);
         setMovies(response.data.movies);
       } catch (error) {
         setErrorMessage('Failed to fetch movies. Please try again later.');
@@ -79,7 +80,7 @@ const MyMoviesPage: React.FC = () => {
                 <CardMedia
                   component="img"
                   height="140"
-                  image={movie.imageUrl[0] || '/path/to/fallback/image.jpg'}
+                  image={(movie.imageUrl?.[0] && (/^(https?:)?\/\//i.test(movie.imageUrl[0]) ? movie.imageUrl[0] : apiUrl(`/${movie.imageUrl[0].replace(/^\//,'')}`))) || '/path/to/fallback/image.jpg'}
                   alt={movie.title}
                 />
                 <CardContent>

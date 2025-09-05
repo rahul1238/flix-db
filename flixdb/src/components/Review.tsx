@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Box,Button,Typography,Snackbar,CircularProgress,Dialog,DialogTitle,DialogContent,DialogActions,TextField,Rating,IconButton,Avatar} from '@mui/material';
 import { ThumbUp, ChatBubbleOutline } from '@mui/icons-material';
-import axios from 'axios';
+import { api } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Cookies from 'js-cookie';
 
@@ -38,9 +38,9 @@ const Review: React.FC<ReviewProps> = ({ movieId }) => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchReviews = async () => {
+  const fetchReviews = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/reviews/${movieId}`);
+    const response = await api.get(`/api/reviews/${movieId}`);
         setReviews(response.data.data);
       } catch (error) {
         setErrorMessage('Failed to fetch reviews. Please try again later.');
@@ -80,8 +80,8 @@ const Review: React.FC<ReviewProps> = ({ movieId }) => {
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:3001/api/reviews`,
+      const response = await api.post(
+        `/api/reviews`,
         {
           movieId: movieId,
           headline: reviewHeadline,

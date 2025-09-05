@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../context/AuthContext";
 import { useNavContext } from "../context/NavContext";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import axios from "axios";
+import { api } from "../utils/api";
 import Cookies from "js-cookie";
 import "./css/Profile.css";
 
@@ -40,8 +40,8 @@ const Profile: React.FC = () => {
           throw new Error("No User logged in.");
         }
 
-        const response = await axios.get(
-          `http://localhost:3001/api/users/${user.id}`,
+        const response = await api.get(
+          `/api/users/${user.id}`,
           {
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
@@ -134,8 +134,8 @@ const Profile: React.FC = () => {
         formData.append("avatar", selectedImage);
       }
 
-      const response = await axios.patch(
-        `http://localhost:3001/api/users/${profileData.id}`,
+      const response = await api.patch(
+        `/api/users/${profileData.id}`,
         formData,
         {
           headers: {
@@ -184,8 +184,8 @@ const Profile: React.FC = () => {
       const formData = new FormData();
       formData.append("avatar", selectedImage);
 
-      const response = await axios.patch(
-        `http://localhost:3001/api/users/${profileData.id}`,
+      const response = await api.patch(
+        `/api/users/${profileData.id}`,
         formData,
         {
           headers: {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, Typography, Box, IconButton, InputAdornment, } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -29,20 +29,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose, onSignupOpen }) =>
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/auth/login', formData);
+      const response = await api.post('/auth/login', formData);
       const accessToken: string = response.data.data.accessToken;
       login(accessToken);
       setFormData({ email: '', password: '' });
       setError(null);
       onClose();
       navigate('/');
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setError(error.response.data?.message || 'Invalid email or password');
+    } catch (err: any) {
+      if (err?.response) {
+        setError(err.response.data?.message || 'Invalid email or password');
       } else {
         setError('An unexpected error occurred');
       }
-      console.error('Error logging in:', error);
+      console.error('Error logging in:', err);
     }
   };
 

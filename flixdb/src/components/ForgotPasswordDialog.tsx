@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Dialog,DialogTitle,DialogContent,TextField,DialogActions,Button,Typography,} from '@mui/material';
-import axios from 'axios';
+import { api } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 
 interface ForgotPasswordDialogProps {
@@ -20,18 +20,19 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({ open, onClo
 
   const handleSendResetLink = async () => {
     try {
-      await axios.post('http://localhost:3001/auth/forgot-password', { email });
+      await api.post('/auth/forgot-password', { email });
       setMessage('A password reset link has been sent to your email.');
       setError(null);
       navigate('/');
       onClose();
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setError(error.response.data?.message || 'Failed to send reset link');
+    } catch (err: unknown) {
+      const anyErr = err as any;
+      if (anyErr && anyErr.response) {
+        setError(anyErr.response.data?.message || 'Failed to send reset link');
       } else {
         setError('An unexpected error occurred');
       }
-      console.error('Error sending reset link:', error);
+      console.error('Error sending reset link:', err);
     }
   };
 

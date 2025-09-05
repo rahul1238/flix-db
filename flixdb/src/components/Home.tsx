@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Grid, Box, Typography, Card, CardMedia, CardContent, Paper, Tabs, Tab, Skeleton, Stack, IconButton, alpha, Container } from '@mui/material';
-import axios from 'axios';
+import { api, url as apiUrl } from '../utils/api';
 import { Link } from 'react-router-dom';
 import MovieCard from './MovieCard';
 import PageIntro from './PageIntro';
@@ -34,7 +34,7 @@ const Home: React.FC = () => {
       try {
         setError(null);
         setLoading(true);
-        const response = await axios.get('http://localhost:3001/api/movies');
+  const response = await api.get('/api/movies');
         const moviesData = Array.isArray(response.data.movies) ? response.data.movies : [];
         setMovies(moviesData);
         if (moviesData.length > 0) {
@@ -61,8 +61,7 @@ const Home: React.FC = () => {
   const resolveImage = (url?: string) => {
     if (!url) return undefined;
     if (/^(https?:)?\/\//i.test(url) || url.startsWith('data:')) return url; // already absolute or data URI
-    const base = (process.env.REACT_APP_API_BASE || 'http://localhost:3001').replace(/\/$/, '');
-    return `${base}/${url.replace(/^\//, '')}`;
+    return apiUrl(`/${url.replace(/^\//, '')}`);
   };
 
   return (

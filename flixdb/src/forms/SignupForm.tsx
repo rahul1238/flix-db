@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {Dialog,DialogTitle,DialogContent,TextField,DialogActions,Button,Typography,MenuItem,Select,FormControl,InputLabel,IconButton,InputAdornment} from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
-import axios from 'axios';
+import { api } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -46,7 +46,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ open, onClose, onSignupSuccess 
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/users', {
+      const response = await api.post('/api/users', {
         username: formData.username,
         name: formData.name,
         email: formData.email,
@@ -60,13 +60,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ open, onClose, onSignupSuccess 
       setError(null);
       onClose();
       navigate('/');
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setError(error.response.data.message || 'Error signing up. Please try again.');
+    } catch (err: any) {
+      if (err?.response) {
+        setError(err.response.data.message || 'Error signing up. Please try again.');
       } else {
         setError('Unexpected error occurred. Please try again.');
       }
-      console.error('Error signing up:', error);
+      console.error('Error signing up:', err);
     }
   };
 

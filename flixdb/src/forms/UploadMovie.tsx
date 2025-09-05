@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Container,TextField,Button,Box,Select,MenuItem,FormControl,InputLabel,Checkbox,ListItemText,OutlinedInput,SelectChangeEvent,Dialog,DialogTitle,DialogContent,DialogActions,Snackbar,CircularProgress} from '@mui/material';
 import PageIntro from '../components/PageIntro';
-import axios from 'axios';
+import { api } from '../utils/api';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,7 +32,7 @@ const UploadMoviePage: React.FC = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/genres');
+        const response = await api.get('/api/genres');
         if (response.data && response.data.success && Array.isArray(response.data.data)) {
           setGenres(response.data.data);
         } else {
@@ -75,7 +75,7 @@ const UploadMoviePage: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/genres', {
+      const response = await api.post('/api/genres', {
         name: newGenreName.trim(),
         description: newGenreDescription.trim(),
       });
@@ -130,7 +130,7 @@ const UploadMoviePage: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/movies', formData, {
+      const response = await api.post('/api/movies', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${Cookies.get('token')}`,

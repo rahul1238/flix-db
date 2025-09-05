@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Box } from '@mui/material';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import axios from 'axios';
+import { api } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,7 +18,7 @@ const GoogleLoginButton:React.FC<GoogleLoginButtonProps> = ({ onClose }) => {
   const handleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     if (credentialResponse && credentialResponse.credential) {
       try {
-        const response = await axios.post('http://localhost:3001/auth/google/sign-in', {
+        const response = await api.post('/auth/google/sign-in', {
           token: credentialResponse.credential,
         });
 

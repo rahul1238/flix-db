@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../utils/api";
 import { Typography, Box, Grid, Card, CardContent, CardMedia, CircularProgress, Chip, Stack } from "@mui/material";
 import PageIntro from "../components/PageIntro";
 import { useParams } from "react-router-dom";
 import GenrePopup from "../components/GenrePopUp";
 import PromoterPopup from "../components/PromoterPopUp";
 import { formatDate } from "../utils/formatDate";
+import { url as apiUrl } from "../utils/api";
 import Review from "../components/Review";
 import { useNavContext } from "../context/NavContext";
 
@@ -61,14 +62,20 @@ const MovieDetail: React.FC = () => {
 
   const { drawerOpen } = useNavContext();
 
+  const resolveImage = (u?: string) => {
+    if (!u) return undefined;
+    if (/^(https?:)?\/\//i.test(u) || u.startsWith('data:')) return u;
+    return apiUrl(`/${u.replace(/^\//, '')}`);
+  };
+
   useEffect(() => {
-    const fetchMovieDetails = async () => {
+  const fetchMovieDetails = async () => {
       try {
-        const response = await axios.get<{
+    const response = await api.get<{
           success: boolean;
           data: Movie;
           message: string;
-        }>(`http://localhost:3001/api/movies/${id}`);
+    }>(`/api/movies/${id}`);
         setMovie(response.data.data);
       } catch (error) {
         console.error("Error fetching movie details:", error);
@@ -131,12 +138,12 @@ const MovieDetail: React.FC = () => {
         <Grid item xs={12}>
           <Grid container spacing={2}>
             {movie.imageUrl && movie.imageUrl.length > 0 ? (
-              movie.imageUrl.map((url, index) => (
+        movie.imageUrl.map((u, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Card>
                     <CardMedia
                       component="img"
-                      image={url}
+          image={resolveImage(u)}
                       alt={`Movie image ${index + 1}`}
                       loading="lazy"
                       sx={{ height: "100%", objectFit: "cover" }}

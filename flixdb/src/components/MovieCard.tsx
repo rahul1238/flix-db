@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Theme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
+import { url as apiUrl } from '../utils/api';
 
 interface MovieCardProps {
   movie: {
@@ -21,8 +22,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const resolveImage = (url?: string) => {
     if (!url) return undefined;
     if (/^(https?:)?\/\//i.test(url) || url.startsWith('data:')) return url;
-    const base = (process.env.REACT_APP_API_BASE || 'http://localhost:3001').replace(/\/$/, '');
-    return `${base}/${url.replace(/^\//, '')}`;
+    return apiUrl(`/${url.replace(/^\//, '')}`);
   };
   const poster = resolveImage(movie.imageUrl?.[0]);
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Box, List, ListItem, ListItemText } from '@mui/material';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../utils/api';
 import { useTheme } from '@mui/material/styles';
 import debounce from 'lodash/debounce';
 
@@ -28,8 +28,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onMovieClick, onClose }) => {
       return;
     }
     try {
-      const response = await axios.get<{ data: Movie[] }>(
-        `http://localhost:3001/api/movies/search?query=${encodeURIComponent(query)}`
+      const response = await api.get<{ data: Movie[] }>(
+        `/api/movies/search?query=${encodeURIComponent(query)}`
       );
       setSearchResults(response.data.data);
     } catch (error) {
