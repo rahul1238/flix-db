@@ -68,12 +68,14 @@ export class AuthService {
   // Initiate forgot password process by generating a reset token and sending an email
   async forgotPassword(email: string): Promise<void> {
     const user = await this.userService.findUserByEmail(email);
+    // Security: do not leak whether email exists; exit silently if not found
     if (!user) {
-      throw new BadRequestException('User with this email does not exist');
+      await new Promise((r) => setTimeout(r, 300)); // minor delay to obscure enumeration timing
+      return;
     }
     const resetToken = await this.userService.generateResetToken(user.id);
-    const resetLink = `${this.configService.get('FRONTEND_URL')}/reset-password?token=${resetToken}`;
-
+    const frontend = this.configService.get('FRONTEND_URL') || 'http://localhost:3000';
+    const resetLink = `${frontend.replace(/\/$/, '')}/reset-password?token=${resetToken}`;
     await this.sendResetPasswordEmail(email, resetLink);
   }
 
@@ -86,17 +88,35 @@ export class AuthService {
     to: string,
     resetLink: string,
   ): Promise<void> {
+    const from =
+      this.configService.get('MAIL_FROM') || this.configService.get('MAIL_USER');
+    const driver = (this.configService.get('MAIL_DRIVER') || 'smtp').toLowerCase();
     const mailOptions = {
-      from: this.configService.get('MAIL_USER'),
+      from,
       to,
       subject: 'Password Reset Request',
-      html: `<p>You requested a password reset. Click the link below to reset your password:</p><a href="${resetLink}">Reset Password</a>`,
+      html: `<p>You requested a password reset. If you did not, you can ignore this email.</p><p><a href="${resetLink}">Reset Password</a></p><p>This link expires in 1 hour.</p>`,
     };
 
+    if (driver === 'disable' || driver === 'none') {
+      // Mail sending intentionally disabled (accept silently)
+      console.warn('[Auth] MAIL_DRIVER=disable: skipping actual email send. Reset link:', resetLink);
+      return;
+    }
+
+    if (driver === 'log') {
+      console.info('[Auth] MAIL_DRIVER=log (email not sent). Payload:', { to, resetLink });
+      return;
+    }
+
     try {
+      if (!from) {
+        throw new Error('Missing MAIL_FROM / MAIL_USER for sender address');
+      }
       await this.mailerService.sendMail(mailOptions);
     } catch (error) {
       console.error('Error sending reset password email:', error);
+      // Swallow error to avoid breaking client flow; optionally could rethrow
       throw new HttpException(
         'Failed to send reset password email. Please try again later.',
         HttpStatus.INTERNAL_SERVER_ERROR,

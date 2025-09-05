@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { Typography, Box } from '@mui/material';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { on } from 'events';
 
 interface GoogleLoginButtonProps {
   onClose: () => void;
@@ -46,11 +46,15 @@ const GoogleLoginButton:React.FC<GoogleLoginButtonProps> = ({ onClose }) => {
   };
 
   return (
-    <div>
+    <Box>
       <GoogleLogin onSuccess={handleLoginSuccess} onError={handleLoginError} />
-      {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
-      {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-    </div>
+      {successMessage && (
+        <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>{successMessage}</Typography>
+      )}
+      {errorMessage && (
+        <Typography variant="body2" color="error.main" sx={{ mt: 1 }}>{errorMessage}</Typography>
+      )}
+    </Box>
   );
 };
 

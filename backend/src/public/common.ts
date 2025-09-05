@@ -9,8 +9,12 @@ export enum Status {
 
 export enum movieType {
   MOVIE = 'movie',
-  SERIES = 'webseries',
-  TV = 'telivision',
+  SERIES = 'series',
+  TV = 'television',
+  DOCUMENTARY = 'documentary',
+  ANIME = 'anime',
+  SHORT = 'short',
+  SPECIAL = 'special',
 }
 
 export enum Role {
