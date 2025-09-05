@@ -10,7 +10,7 @@
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "/flixdb/$1"
+        "dest": "/index.html"
       }
     ]
   }
