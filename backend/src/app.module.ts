@@ -29,14 +29,11 @@ import { UserService } from './user/user.service';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
+      url: process.env.DATABASE_URL,
       autoLoadEntities: true,
       synchronize: true,
       entities: [User, __dirname + '/**/*.entity{.ts,.js}'],
+      ssl: { rejectUnauthorized: false },
     }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
